@@ -1,0 +1,9 @@
+.venv/
+.env
+backup/
+dataset/
+build/
+*.zip
+__pycache__/
+.pytest_cache/
+.superpowers/

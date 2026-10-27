@@ -1,0 +1,178 @@
+<title>Ligação FTDI → ESP32-CAM</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: bancada única — diagrama SVG em cima, checklist e modos embaixo, coluna de leitura estreita */
+:root {
+  --bg: #f3f4f1; --fg: #1b1e1c; --muted: #5d655f; --line: #d5d9d3; --panel: #ffffff;
+  --ftdi: #c8323b; --ftdi-ink: #fff3f3; --esp: #202326; --esp-ink: #e9ece8; --pin: #c9a227;
+  --w5v: #d9363e; --wgnd: #2b2f2c; --wtx: #c98a00; --wrx: #2f6fd6; --wjmp: #7b4fd0; --off: #b7bdb5;
+  --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #141716; --fg: #e6e9e5; --muted: #9aa39c; --line: #2c322e; --panel: #1b1f1d;
+  --ftdi: #b52a33; --esp: #0c0e0f; --esp-ink: #dfe3de; --wgnd: #d8dcd6; --off: #4a514c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #141716; --fg: #e6e9e5; --muted: #9aa39c; --line: #2c322e; --panel: #1b1f1d;
+  --ftdi: #b52a33; --esp: #0c0e0f; --esp-ink: #dfe3de; --wgnd: #d8dcd6; --off: #4a514c; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.55; }
+main { max-width: 980px; margin: 0 auto; padding-block: 28px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 28px; }
+h1 { font-size: 1.6rem; margin: 0; text-wrap: balance; font-weight: 600; }
+h2 { font-size: 1.05rem; margin: 0 0 10px; font-weight: 600; }
+.sub { color: var(--muted); margin: 4px 0 0; max-width: 65ch; }
+.toggle { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.toggle span { color: var(--muted); font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; }
+.toggle button { font: inherit; font-size: .9rem; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line);
+  background: var(--panel); color: var(--fg); cursor: pointer; }
+.toggle button[aria-pressed="true"] { border-color: var(--fg); font-weight: 600; }
+.toggle button:focus-visible { outline: 2px solid var(--wrx); outline-offset: 2px; }
+.diagram { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px; }
+.diagram svg { display: block; width: 100%; min-width: 640px; height: auto; }
+svg text { font-family: var(--mono); }
+.wire { fill: none; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+.optA .onlyB, .optB .onlyA { display: none; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.grid > section { min-width: 0; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 500; }
+td code, li code { font-family: var(--mono); font-size: .88em; }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; }
+ul.check { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+ul.check li { display: flex; gap: 10px; align-items: flex-start; }
+ul.check input { margin-top: 4px; }
+.warn { border-left: 3px solid var(--w5v); padding: 8px 12px; background: var(--panel); border-radius: 0 6px 6px 0; }
+</style>
+
+<main id="root" class="optA">
+  <header>
+    <h1>Ligação FTDI → ESP32-CAM</h1>
+    <p class="sub">4 fios fixos e 1 jumper de modo. Siga as legendas impressas nas placas: a ordem física do header da borda do FTDI muda entre modelos.</p>
+  </header>
+
+  <div class="toggle" role="group" aria-label="Opção de alimentação">
+    <span>Alimentação</span>
+    <button id="btnA" aria-pressed="true">Opção A: lógica 3,3 V (recomendada)</button>
+    <button id="btnB" aria-pressed="false">Opção B: jumper em 5V</button>
+  </div>
+
+  <div class="diagram">
+  <svg viewBox="0 0 900 590" role="img" aria-label="Diagrama de ligação entre FTDI e ESP32-CAM">
+    <!-- FTDI -->
+    <rect x="40" y="110" width="260" height="330" rx="10" fill="var(--ftdi)"/>
+    <rect x="10" y="250" width="40" height="60" rx="6" fill="var(--off)"/>
+    <text x="30" y="335" fill="var(--muted)" font-size="12" text-anchor="middle">USB-C</text>
+    <text x="170" y="400" fill="var(--ftdi-ink)" font-size="18" font-weight="600" text-anchor="middle">FTDI FT232RL</text>
+    <text x="170" y="420" fill="var(--ftdi-ink)" font-size="11" text-anchor="middle" opacity=".85">COM3</text>
+    <!-- seletor -->
+    <text x="160" y="135" fill="var(--ftdi-ink)" font-size="11" text-anchor="middle">seletor de tensão</text>
+    <g fill="var(--pin)"><circle cx="120" cy="160" r="7"/><circle cx="160" cy="160" r="7"/><circle cx="200" cy="160" r="7"/></g>
+    <g fill="var(--ftdi-ink)" font-size="12" text-anchor="middle">
+      <text x="120" y="188">5V</text><text x="160" y="188">VCCIO</text><text x="200" y="188">3V3</text></g>
+    <rect class="onlyA" x="148" y="150" width="64" height="20" rx="4" fill="var(--esp)" opacity=".9"/>
+    <rect class="onlyB" x="108" y="150" width="64" height="20" rx="4" fill="var(--esp)" opacity=".9"/>
+    <!-- header da borda -->
+    <g font-size="13" fill="var(--ftdi-ink)" text-anchor="end">
+      <text x="284" y="214">DTR</text><text x="284" y="254">RXD</text><text x="284" y="294">TXD</text>
+      <text x="284" y="334">VCC</text><text x="284" y="374">CTS</text><text x="284" y="414" dy="-28">GND</text></g>
+    <g fill="var(--pin)"><circle cx="300" cy="210" r="7"/><circle cx="300" cy="250" r="7"/><circle cx="300" cy="290" r="7"/>
+      <circle cx="300" cy="330" r="7"/><circle cx="300" cy="370" r="7"/><circle cx="300" cy="382" r="0"/></g>
+    <circle cx="300" cy="386" r="7" fill="var(--pin)" transform="translate(0,0)"/>
+
+    <!-- ESP32-CAM -->
+    <rect x="520" y="60" width="280" height="440" rx="10" fill="var(--esp)"/>
+    <rect x="610" y="80" width="100" height="70" rx="6" fill="var(--off)" opacity=".5"/>
+    <circle cx="660" cy="115" r="22" fill="var(--esp)" stroke="var(--esp-ink)" stroke-width="2"/>
+    <text x="660" y="170" fill="var(--esp-ink)" font-size="11" text-anchor="middle">câmera (frente)</text>
+    <text x="660" y="470" fill="var(--esp-ink)" font-size="17" font-weight="600" text-anchor="middle">ESP32-CAM</text>
+    <g fill="var(--esp-ink)" font-size="13">
+      <g text-anchor="start">
+        <text x="560" y="135">5V</text><text x="560" y="180">GND</text><text x="560" y="225">IO12</text><text x="560" y="270">IO13</text>
+        <text x="560" y="315">IO15</text><text x="560" y="360">IO14</text><text x="560" y="405">IO2</text><text x="560" y="450" dy="-6">IO4</text></g>
+      <g text-anchor="end">
+        <text x="760" y="135">3V3</text><text x="760" y="180">IO16</text><text x="760" y="225">IO0</text><text x="760" y="270">GND</text>
+        <text x="760" y="315" opacity=".55">VCC ✕</text><text x="760" y="360">U0R</text><text x="760" y="405">U0T</text><text x="760" y="444" opacity=".55">GND/R ✕</text></g>
+    </g>
+    <g fill="var(--pin)">
+      <circle cx="545" cy="130" r="6"/><circle cx="545" cy="175" r="6"/><circle cx="545" cy="220" r="6"/><circle cx="545" cy="265" r="6"/>
+      <circle cx="545" cy="310" r="6"/><circle cx="545" cy="355" r="6"/><circle cx="545" cy="400" r="6"/><circle cx="545" cy="440" r="6"/>
+      <circle cx="775" cy="130" r="6"/><circle cx="775" cy="175" r="6"/><circle cx="775" cy="220" r="6"/><circle cx="775" cy="265" r="6"/>
+      <circle cx="775" cy="310" r="6"/><circle cx="775" cy="355" r="6"/><circle cx="775" cy="400" r="6"/><circle cx="775" cy="440" r="6"/></g>
+
+    <!-- fios -->
+    <path class="wire onlyA" stroke="var(--w5v)" d="M120 160 V70 H470 V130 H545"/>
+    <path class="wire onlyB" stroke="var(--w5v)" d="M300 330 H400 V130 H545"/>
+    <path class="wire" stroke="var(--wgnd)" d="M300 386 H430 V175 H545"/>
+    <path class="wire" stroke="var(--wtx)" d="M300 290 H380 V530 H850 V355 H775"/>
+    <path class="wire" stroke="var(--wrx)" d="M300 250 H360 V550 H870 V400 H775"/>
+    <path class="wire" stroke="var(--wjmp)" stroke-width="6" d="M775 220 H818 V265 H775"/>
+    <text x="826" y="236" fill="var(--wjmp)" font-size="11">jumper</text>
+    <text x="826" y="250" fill="var(--wjmp)" font-size="11">só p/</text>
+    <text x="826" y="264" fill="var(--wjmp)" font-size="11">gravar</text>
+
+    <g font-size="12" fill="var(--muted)">
+      <text x="610" y="545">TXD → U0R</text><text x="610" y="568">RXD → U0T</text>
+      <text class="onlyA" x="250" y="62">5V do seletor → 5V</text>
+      <text class="onlyB" x="320" y="320">VCC → 5V</text>
+      <text x="320" y="402">GND → GND</text>
+      <text x="200" y="470" text-anchor="middle">DTR e CTS: soltos</text>
+    </g>
+  </svg>
+  </div>
+
+  <p class="warn onlyA" id="noteA"><strong>Opção A:</strong> jumper do seletor em <code>VCCIO + 3V3</code>. O pino <code>5V</code> do seletor fica livre e alimenta o ESP. Não use o <code>VCC</code> da borda, que agora sai 3,3 V.</p>
+  <p class="warn onlyB" id="noteB"><strong>Opção B:</strong> jumper do seletor em <code>5V + VCCIO</code>. O <code>VCC</code> da borda sai 5 V e alimenta o ESP. Funciona, mas o TX do FTDI manda 5 V para o RX do ESP32, acima da especificação de 3,3 V.</p>
+
+  <div class="grid">
+    <section>
+      <h2>Fios fixos</h2>
+      <table>
+        <thead><tr><th>FTDI</th><th>ESP32-CAM</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sw" style="background:var(--w5v)"></span><span class="onlyA">5V do seletor</span><span class="onlyB">VCC da borda</span></td><td><code>5V</code>, header esquerdo, 1º pino</td></tr>
+          <tr><td><span class="sw" style="background:var(--wgnd)"></span>GND</td><td><code>GND</code>, header esquerdo, 2º pino</td></tr>
+          <tr><td><span class="sw" style="background:var(--wtx)"></span>TXD</td><td><code>U0R</code>, header direito, 6º pino</td></tr>
+          <tr><td><span class="sw" style="background:var(--wrx)"></span>RXD</td><td><code>U0T</code>, header direito, 7º pino</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <h2>Modo de operação</h2>
+      <table>
+        <thead><tr><th>Modo</th><th>Jumper IO0 ↔ GND</th></tr></thead>
+        <tbody>
+          <tr><td>Gravar / backup</td><td><span class="sw" style="background:var(--wjmp)"></span>Ligado, depois RST (ou reconectar o USB)</td></tr>
+          <tr><td>Rodar o programa</td><td>Removido, depois RST</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <section>
+    <h2>Conferência antes de ligar o USB</h2>
+    <ul class="check">
+      <li><input type="checkbox" id="c1"><label for="c1">Jumper do seletor na posição da opção escolhida.</label></li>
+      <li><input type="checkbox" id="c2"><label for="c2">Fio de alimentação no pino <code>5V</code> do ESP, e não no <code>3V3</code> nem no <code>VCC</code>.</label></li>
+      <li><input type="checkbox" id="c3"><label for="c3">Um único GND do FTDI ligado em um GND do ESP (não no <code>GND/R</code>).</label></li>
+      <li><input type="checkbox" id="c4"><label for="c4">TX e RX cruzados: <code>TXD → U0R</code> e <code>RXD → U0T</code>.</label></li>
+      <li><input type="checkbox" id="c5"><label for="c5">Nada ligado em DTR, RTS ou CTS do FTDI.</label></li>
+      <li><input type="checkbox" id="c6"><label for="c6">Para o backup: jumper <code>IO0 ↔ GND</code> direto na placa ESP.</label></li>
+    </ul>
+  </section>
+</main>
+
+<script>
+(function () {
+  var root = document.getElementById('root');
+  var a = document.getElementById('btnA'), b = document.getElementById('btnB');
+  function set(opt) {
+    root.className = opt === 'B' ? 'optB' : 'optA';
+    a.setAttribute('aria-pressed', opt !== 'B');
+    b.setAttribute('aria-pressed', opt === 'B');
+  }
+  a.addEventListener('click', function () { set('A'); });
+  b.addEventListener('click', function () { set('B'); });
+})();
+</script>
