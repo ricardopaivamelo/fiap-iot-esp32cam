@@ -14,7 +14,9 @@
 
 ## Global Constraints
 
-- Trilha: **Imagem → classificação de objeto** (não detecção; "Image classification" no EI).
+- Trilha: **Imagem → detecção de objetos com FOMO** (decisão do Ricardo em 2026-10-27: o professor exige bounding boxes desenhadas manualmente, o que só existe em detecção). Classes: `garrafa`, `caderno`, `caneca`. Sem classe `fundo`: as fotos vazias entram sem box.
+- Coleta: tela local `collector_ui.py` (http://localhost:8000) com preview ao vivo. Cenas: `garrafa` ~50, `caderno` ~50, `caneca` ~50, `misto` ~30 (2–3 objetos juntos), `vazio` ~20.
+- Labeling: boxes **manuais** no *Labeling queue* do Studio (AI-assisted labeling desligado).
 - Plataforma de treino: **Edge Impulse** (obrigatório).
 - Alvo de deploy: **ESP32-CAM** clone AI-Thinker (ESP32 + ~4 MB PSRAM, OV2640), FTDI FT232R na **COM3**.
 - Export: **Arduino library** do EI, modelo **quantizado int8**.
@@ -95,20 +97,21 @@
 - Consumes: `dataset/<label>/*.jpg` da Task 2.
 - Produces: projeto EI `fiap-iot-esp32cam` com dados rotulados, split ~80/20.
 
-- [ ] **Step 1:** Ricardo cria o projeto no Studio (tipo *Images → Classify a single object*) e copia a API key (Dashboard → Keys) para `.env`.
-- [ ] **Step 2:** Por classe: `edge-impulse-uploader --api-key $env:EI_API_KEY --label <classe> --category split dataset\<classe>\*.jpg`. Esperado: `Done. Files uploaded successful: 80`.
-- [ ] **Step 3:** No Studio → Data acquisition: conferir contagem por classe e split Training/Test ≈ 80/20. Print salvo em `docs/img/01-dataset.png`.
+- [ ] **Step 1:** Ricardo cria o projeto no Studio, define *Labeling method = Bounding boxes (object detection)* e copia a API key (Dashboard → Keys) para `.env`.
+- [ ] **Step 2:** Por cena, **sem `--label`**: `edge-impulse-uploader --api-key $env:EI_API_KEY --category split dataset\<cena>\*.jpg`. Esperado: `Files uploaded successful` com a contagem da cena.
+- [ ] **Step 3 (manual, Ricardo):** Labeling queue: desenhar uma box por objeto visível (`garrafa`/`caderno`/`caneca`); fotos de `vazio` ficam sem box. Print em `docs/img/01-labeling.png`.
+- [ ] **Step 4:** Data acquisition: conferir split Training/Test ≈ 80/20 e zero imagens com objeto sem box. Print em `docs/img/02-dataset.png`.
 
 ### Task 4: Impulse + treino
 
 **Interfaces:**
 - Produces: modelo int8 com métricas registradas em `docs/img/`.
 
-- [ ] **Step 1 — Impulse design:** Image data **96×96**, resize *Fit shortest axis*; processing block **Image** (color depth **Grayscale** — menos RAM no ESP32; testar RGB só se acurácia < meta); learning block **Transfer Learning (Images)**.
-- [ ] **Step 2 — Features:** Generate features; feature explorer deve mostrar classes separáveis. Print `docs/img/02-features.png`.
-- [ ] **Step 3 — Treino:** MobileNetV2 **96×96 0.35**, 20–30 epochs, learning rate 0.0005, data augmentation **on**. Target device: **Espressif ESP-EYE (ESP32 240MHz)**.
-- [ ] **Step 4 — Critério de aceite:** acurácia de validação **≥ 85%** e estimativa on-device com **RAM < 250 KB e Flash < 1 MB** (versão int8). Se < 85%: primeiro mais dados da classe mais confundida, depois RGB, depois alpha 0.1/0.35 trade-off. Print `docs/img/03-training.png`.
-- [ ] **Step 5 — Model testing:** Classify all no test set. Esperado: acurácia de teste ≥ 80%. Print `docs/img/04-test.png`.
+- [ ] **Step 1 — Impulse design:** Image data **96×96**, resize *Fit shortest axis*; processing block **Image** (color depth **Grayscale**; RGB só se o F1 ficar abaixo da meta); learning block **Object Detection (Images)**.
+- [ ] **Step 2 — Features:** Generate features. Print `docs/img/03-features.png`.
+- [ ] **Step 3 — Treino:** **FOMO (MobileNetV2 0.35)**, 60 epochs, learning rate 0.001. Target device: **Espressif ESP-EYE (ESP32 240MHz)**.
+- [ ] **Step 4 — Critério de aceite:** **F1 de validação ≥ 0.80** por classe e estimativa on-device int8 com **RAM < 250 KB e Flash < 1 MB**. Abaixo disso: primeiro mais fotos da classe com F1 mais baixo, depois RGB. Print `docs/img/04-training.png`.
+- [ ] **Step 5 — Model testing:** Classify all no test set. Esperado: F1 de teste ≥ 0.75. Print `docs/img/05-test.png`.
 
 ### Task 5: Export e deploy no ESP32-CAM
 

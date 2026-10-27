@@ -34,11 +34,17 @@ def fetch_frame(host: str, timeout: float = 5.0) -> bytes | None:
     return body
 
 
-def collect(host: str, label: str, count: int, interval: float, out_dir: Path = Path("dataset")) -> int:
-    """Salva `count` frames válidos em `out_dir/<label>/`; desiste após falhas seguidas. Retorna quantos salvou."""
+def save_frame(frame: bytes, label: str, out_dir: Path = Path("dataset")) -> Path:
+    """Grava o frame como o próximo `<label>_NNNN.jpg` em `out_dir/<label>/`."""
     folder = out_dir / label
     folder.mkdir(parents=True, exist_ok=True)
-    index = next_index(folder, label)
+    path = folder / f"{label}_{next_index(folder, label):04d}.jpg"
+    path.write_bytes(frame)
+    return path
+
+
+def collect(host: str, label: str, count: int, interval: float, out_dir: Path = Path("dataset")) -> int:
+    """Salva `count` frames válidos em `out_dir/<label>/`; desiste após falhas seguidas. Retorna quantos salvou."""
     saved = failures = 0
     while saved < count:
         frame = fetch_frame(host)
@@ -49,8 +55,7 @@ def collect(host: str, label: str, count: int, interval: float, out_dir: Path = 
                 break
             continue
         failures = 0
-        (folder / f"{label}_{index:04d}.jpg").write_bytes(frame)
-        index += 1
+        save_frame(frame, label, out_dir)
         saved += 1
         print(f"{label} {saved}/{count}")
         if saved < count:
