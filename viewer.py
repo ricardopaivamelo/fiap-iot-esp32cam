@@ -167,7 +167,8 @@ canvas{width:100%;display:block}
 .badge{position:absolute;top:10px;left:10px;padding:3px 9px;border-radius:4px;font:600 12px ui-monospace,monospace;background:#000a}
 aside{display:grid;gap:14px;align-content:start}
 h1{font-size:1.1rem;margin:0}
-.det{display:grid;gap:6px}
+section{display:grid;gap:10px;align-content:start}
+.det{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .det div{display:flex;justify-content:space-between;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font-weight:600}
 .n{font:600 13px ui-monospace,monospace;color:var(--muted)}
 pre{font:12px ui-monospace,monospace;color:var(--muted);background:var(--panel);padding:10px;border-radius:6px;white-space:pre-wrap;margin:0;max-height:260px;overflow:auto}
@@ -175,13 +176,14 @@ small{color:var(--muted)}
 .cenas{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .cenas button{font:600 14px system-ui;padding:9px 10px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer;display:flex;justify-content:space-between}
 .cenas button:hover{border-color:var(--ok)}.cenas button:disabled{opacity:.5;cursor:wait}
+#saved{min-height:3em}
 </style></head><body><main>
 <section><div class="cam"><canvas id="cv" width="320" height="240"></canvas><span class="badge" id="badge">aguardando placa…</span></div>
-<small>Círculo = centróide detectado pelo FOMO (grade 12×12 sobre a entrada 96×96). Quadro atualiza a cada inferência.</small></section>
-<aside><h1>Inferência ESP32-CAM</h1>
+<small><label><input type="checkbox" id="ov"> marcar detecções na imagem</label> — círculo = centróide do FOMO (grade 12×12 sobre a entrada 96×96).</small>
+<h1>Inferência ESP32-CAM</h1>
 <div class="det" id="det"><small>nenhuma detecção ainda</small></div>
-<div class="n" id="timing"></div>
-<h1>Coleta v2</h1>
+<div class="n" id="timing"></div></section>
+<aside><h1>Coleta v2</h1>
 <div class="cenas" id="cenas"></div>
 <small id="saved">Teclas 1–5 gravam o quadro exibido (as marcações do modelo não entram na foto).</small>
 <pre id="log"></pre></aside></main>
@@ -190,7 +192,8 @@ const COLORS={garrafa:'#3fb27f',caderno:'#4c9aff',caneca:'#f5a524'};
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),badge=document.getElementById('badge');
 const img=new Image();let seq=-1,det=null;
 img.onload=()=>{cv.width=img.naturalWidth;cv.height=img.naturalHeight;draw()};
-function draw(){ctx.drawImage(img,0,0);if(!det)return;
+const ov=document.getElementById('ov');ov.onchange=draw;
+function draw(){ctx.drawImage(img,0,0);if(!det||!ov.checked)return;
  const sx=cv.width/96,sy=cv.height/96;
  for(const b of det.boxes){const c=COLORS[b.label]||'#fff',cx=(b.x+b.w/2)*sx,cy=(b.y+b.h/2)*sy;
   ctx.lineWidth=3;ctx.strokeStyle=c;ctx.beginPath();ctx.arc(cx,cy,Math.max(b.w*sx,14),0,2*Math.PI);ctx.stroke();
