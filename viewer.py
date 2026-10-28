@@ -2,6 +2,7 @@
 
 O firmware emite, a cada ciclo, `#FRAME <base64 do JPEG>` e `#DET <json>`; o resto da serial é log.
 Funciona só com o cabo USB (sem WiFi), então serve tanto na placa do Ricardo quanto na do professor.
+Também é a tela da coleta v2: `POST /save?scene=&seq=` grava no dataset o quadro que a página está exibindo.
 """
 
 import argparse
@@ -12,19 +13,23 @@ import threading
 import time
 from collections import deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlparse
+from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
-from collect import JPEG_EOI, JPEG_SOI
+from collect import JPEG_EOI, JPEG_SOI, save_frame
+from collector_ui import SCENES, dataset_stats
 
 MODEL_SIZE = 96
 LOG_LINES = 20
+RECENT_FRAMES = 5  # quadros guardados por seq: a página pode estar exibindo um anterior ao último recebido
 STATE: dict = {}
 _lock = threading.Lock()
 
 
 def reset_state() -> None:
     with _lock:
-        STATE.update(frame=None, det=None, seq=0, log=deque(maxlen=LOG_LINES), last_rx=None)
+        STATE.update(frame=None, det=None, seq=0, log=deque(maxlen=LOG_LINES), last_rx=None,
+                     recent={}, out_dir=Path("dataset-v2"))
 
 
 reset_state()
@@ -64,6 +69,8 @@ def handle_line(line: str) -> None:
         if kind == "frame":
             STATE["frame"] = payload
             STATE["seq"] += 1
+            STATE["recent"][STATE["seq"]] = payload
+            STATE["recent"].pop(STATE["seq"] - RECENT_FRAMES, None)
         elif kind == "det":
             STATE["det"] = payload
         elif line:
@@ -121,8 +128,30 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/det":
             age = None if last_rx is None else time.monotonic() - last_rx
             self._json(200, {"det": det, "seq": seq, "log": log, "age": age})
+        elif path == "/stats":
+            self._json(200, dataset_stats(STATE["out_dir"]))
         else:
             self._json(404, {"error": "rota inexistente"})
+
+    def do_POST(self) -> None:
+        url = urlparse(self.path)
+        if url.path != "/save":
+            self._json(404, {"error": "rota inexistente"})
+            return
+        query = parse_qs(url.query)
+        scene = query.get("scene", [""])[0]
+        seq = query.get("seq", [""])[0]
+        if scene not in SCENES or not seq.isdigit():
+            self._json(400, {"error": f"parâmetros inválidos: scene={scene!r} seq={seq!r}"})
+            return
+        with _lock:
+            frame = STATE["recent"].get(int(seq))
+            if frame is None:
+                self._json(409, {"error": f"quadro {seq} não está mais disponível; tente de novo"})
+                return
+            saved = save_frame(frame, scene, STATE["out_dir"])
+            stats = dataset_stats(STATE["out_dir"])
+        self._json(200, {"file": saved.name, "stats": stats})
 
 
 PAGE = """<!doctype html>
@@ -143,12 +172,18 @@ h1{font-size:1.1rem;margin:0}
 .n{font:600 13px ui-monospace,monospace;color:var(--muted)}
 pre{font:12px ui-monospace,monospace;color:var(--muted);background:var(--panel);padding:10px;border-radius:6px;white-space:pre-wrap;margin:0;max-height:260px;overflow:auto}
 small{color:var(--muted)}
+.cenas{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cenas button{font:600 14px system-ui;padding:9px 10px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer;display:flex;justify-content:space-between}
+.cenas button:hover{border-color:var(--ok)}.cenas button:disabled{opacity:.5;cursor:wait}
 </style></head><body><main>
 <section><div class="cam"><canvas id="cv" width="320" height="240"></canvas><span class="badge" id="badge">aguardando placa…</span></div>
 <small>Círculo = centróide detectado pelo FOMO (grade 12×12 sobre a entrada 96×96). Quadro atualiza a cada inferência.</small></section>
 <aside><h1>Inferência ESP32-CAM</h1>
 <div class="det" id="det"><small>nenhuma detecção ainda</small></div>
 <div class="n" id="timing"></div>
+<h1>Coleta v2</h1>
+<div class="cenas" id="cenas"></div>
+<small id="saved">Teclas 1–5 gravam o quadro exibido (as marcações do modelo não entram na foto).</small>
 <pre id="log"></pre></aside></main>
 <script>
 const COLORS={garrafa:'#3fb27f',caderno:'#4c9aff',caneca:'#f5a524'};
@@ -170,6 +205,18 @@ async function tick(){try{const r=await fetch('/det');const j=await r.json();
    if(det)document.getElementById('timing').textContent=`captura ${det.cap??'?'} ms · DSP ${det.dsp} ms · inferência ${det.nn} ms · ciclo ${det.loop??'?'} ms`}
  }catch(e){badge.textContent='viewer fora do ar';badge.style.color='var(--bad)'}setTimeout(tick,300)}
 tick();
+const SCENES=['garrafa','caderno','caneca','misto','vazio'],cenas=document.getElementById('cenas'),saved=document.getElementById('saved');
+let busy=false;
+function renderStats(st){cenas.innerHTML=SCENES.map((s,i)=>`<button data-s="${s}"><span>${i+1} · ${s}</span><span class="n">${st[s]??0}</span></button>`).join('');
+ cenas.querySelectorAll('button').forEach(b=>b.onclick=()=>save(b.dataset.s))}
+async function save(scene){if(busy||seq<1)return;busy=true;cenas.querySelectorAll('button').forEach(b=>b.disabled=true);
+ try{const r=await fetch(`/save?scene=${scene}&seq=${seq}`,{method:'POST'});const j=await r.json();
+  if(r.ok){renderStats(j.stats);saved.textContent=`gravado: ${j.file}`;saved.style.color='var(--ok)'}
+  else{saved.textContent=j.error;saved.style.color='var(--bad)'}}
+ catch(e){saved.textContent='falha ao gravar';saved.style.color='var(--bad)'}
+ busy=false;cenas.querySelectorAll('button').forEach(b=>b.disabled=false)}
+document.addEventListener('keydown',e=>{const i=parseInt(e.key,10);if(i>=1&&i<=SCENES.length)save(SCENES[i-1])});
+fetch('/stats').then(r=>r.json()).then(renderStats);
 </script></body></html>
 """
 
@@ -179,7 +226,9 @@ def main() -> None:
     parser.add_argument("--port", default="COM3")
     parser.add_argument("--baud", type=int, default=460800)
     parser.add_argument("--http", type=int, default=8001)
+    parser.add_argument("--out", type=Path, default=Path("dataset-v2"), help="pasta da coleta v2")
     args = parser.parse_args()
+    STATE["out_dir"] = args.out
     threading.Thread(target=read_serial, args=(args.port, args.baud), daemon=True).start()
     print(f"Viewer em http://localhost:{args.http}  (serial {args.port} @ {args.baud})")
     ThreadingHTTPServer(("127.0.0.1", args.http), Handler).serve_forever()

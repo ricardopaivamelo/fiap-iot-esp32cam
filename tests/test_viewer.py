@@ -75,6 +75,55 @@ def test_http_frame_503_sem_frame(server):
     assert exc.value.code == 503
 
 
+def _post(url):
+    req = urllib.request.Request(url, method="POST")
+    try:
+        with urllib.request.urlopen(req) as r:
+            return r.status, json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        return e.code, json.loads(e.read())
+
+
+def _frame_line(jpeg):
+    return "#FRAME " + base64.b64encode(jpeg).decode()
+
+
+def test_http_save_grava_o_quadro_exibido(server, tmp_path):
+    viewer.STATE["out_dir"] = tmp_path
+    exibido = b"\xff\xd8" + b"\x01" * 16 + b"\xff\xd9"
+    viewer.handle_line(_frame_line(exibido))  # seq 1: o que a página está mostrando
+    viewer.handle_line(_frame_line(JPEG))  # seq 2: chegou depois, ainda não exibido
+    status, body = _post(f"{server}/save?scene=caneca&seq=1")
+    assert status == 200
+    assert (tmp_path / "caneca" / "caneca_0000.jpg").read_bytes() == exibido
+    assert body["file"] == "caneca_0000.jpg"
+    assert body["stats"]["caneca"] == 1
+
+
+def test_http_save_sem_frame_409(server, tmp_path):
+    viewer.STATE["out_dir"] = tmp_path
+    status, _ = _post(f"{server}/save?scene=caneca&seq=1")
+    assert status == 409
+    assert not (tmp_path / "caneca").exists()
+
+
+def test_http_save_quadro_descartado_409(server, tmp_path):
+    viewer.STATE["out_dir"] = tmp_path
+    for _ in range(viewer.RECENT_FRAMES + 1):
+        viewer.handle_line(_frame_line(JPEG))
+    status, _ = _post(f"{server}/save?scene=caneca&seq=1")
+    assert status == 409
+
+
+@pytest.mark.parametrize("query", ["scene=../../etc&seq=1", "scene=caneca&seq=abc", "scene=caneca"])
+def test_http_save_parametros_invalidos_400(server, tmp_path, query):
+    viewer.STATE["out_dir"] = tmp_path
+    viewer.handle_line(_frame_line(JPEG))
+    status, _ = _post(f"{server}/save?{query}")
+    assert status == 400
+    assert list(tmp_path.iterdir()) == []
+
+
 def test_http_det_devolve_estado(server):
     viewer.handle_line("#FRAME " + base64.b64encode(JPEG).decode())
     viewer.handle_line("#DET " + json.dumps(DET))
