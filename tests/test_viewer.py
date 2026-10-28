@@ -115,6 +115,15 @@ def test_http_save_quadro_descartado_409(server, tmp_path):
     assert status == 409
 
 
+def test_http_save_mesmo_quadro_duas_vezes_409(server, tmp_path):
+    viewer.STATE["out_dir"] = tmp_path
+    viewer.handle_line(_frame_line(JPEG))
+    assert _post(f"{server}/save?scene=caneca&seq=1")[0] == 200
+    status, _ = _post(f"{server}/save?scene=garrafa&seq=1")
+    assert status == 409
+    assert sorted(p.name for p in tmp_path.rglob("*.jpg")) == ["caneca_0000.jpg"]
+
+
 @pytest.mark.parametrize("query", ["scene=../../etc&seq=1", "scene=caneca&seq=abc", "scene=caneca"])
 def test_http_save_parametros_invalidos_400(server, tmp_path, query):
     viewer.STATE["out_dir"] = tmp_path

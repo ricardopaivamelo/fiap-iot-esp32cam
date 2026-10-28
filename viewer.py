@@ -145,9 +145,10 @@ class Handler(BaseHTTPRequestHandler):
             self._json(400, {"error": f"parâmetros inválidos: scene={scene!r} seq={seq!r}"})
             return
         with _lock:
-            frame = STATE["recent"].get(int(seq))
+            # pop: cada quadro só pode ser gravado uma vez (tecla repetida antes do próximo quadro gerava cópias)
+            frame = STATE["recent"].pop(int(seq), None)
             if frame is None:
-                self._json(409, {"error": f"quadro {seq} não está mais disponível; tente de novo"})
+                self._json(409, {"error": f"quadro {seq} já gravado ou descartado; espere o próximo quadro"})
                 return
             saved = save_frame(frame, scene, STATE["out_dir"])
             stats = dataset_stats(STATE["out_dir"])

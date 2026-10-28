@@ -23,16 +23,18 @@ for cat in ("training", "testing"):
         samples = r.get("samples", [])
         if not samples:
             break
+        offset += len(samples)
         for s in samples:
+            if s.get("isDisabled"):  # dataset v1 (com a mão), desativado na Task 6
+                continue
             n += 1
             boxes = s.get("boundingBoxes") or []
             for b in boxes:
                 labels[b["label"]] += 1
                 if b["label"] == "vazio": print("BOX vazio em", cat, s["filename"], s["id"])
-            if not boxes and not s["filename"].startswith("vazio"):
+            if not boxes and not s["filename"].removeprefix("v2-").startswith("vazio"):
                 missing.append(f"{cat}:{s['filename']}")
-        offset += len(samples)
-    print(f"{cat}: {n} amostras")
+    print(f"{cat}: {n} amostras ativas")
 
 print("boxes por label:", dict(labels))
 print("objetos sem box:", len(missing), missing[:30])
