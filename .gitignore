@@ -9,3 +9,5 @@ __pycache__/
 .superpowers/
 
 .playwright-mcp/
+build-float32/
+dataset-v2/

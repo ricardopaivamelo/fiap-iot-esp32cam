@@ -4,142 +4,109 @@
 
 **Goal:** Treinar no Edge Impulse um detector FOMO com dados capturados pelo próprio ESP32-CAM, rodar a inferência embarcada na placa (offline, sem WiFi), provar o funcionamento com vídeo e entregar um repositório que documenta o processo inteiro e permite ao professor gravar o modelo na placa dele.
 
-**Architecture:** A coleta reaproveitou o firmware VisionGuard (`GET /capture`) via `collector_ui.py`. Treino e export no Studio. O firmware de inferência parte do exemplo `esp32_camera` da biblioteca exportada e, a cada ciclo, emite pela serial o JPEG do quadro e as detecções em JSON; um visualizador local (`viewer.py`, stdlib + pyserial) desenha os centróides sobre o quadro no navegador. Assim a demo funciona em qualquer lugar só com o cabo USB — inclusive na placa do professor — e serve de tela para o vídeo.
+**Architecture:** Coleta v1 via firmware VisionGuard (`GET /capture`) + `collector_ui.py`; coleta v2 pelo próprio firmware de inferência (quadros `#FRAME` da serial) + `viewer.py`. Treino e export no Studio. O firmware emite pela serial o JPEG do quadro e as detecções em JSON; o `viewer.py` (stdlib + pyserial) desenha os centróides no navegador. A demo funciona em qualquer lugar só com o cabo USB.
 
 **Tech Stack:** Edge Impulse Studio + `edge-impulse-uploader`, Python 3.11 (venv), `requests`, `pyserial`, `pytest`, `arduino-cli` + core `esp32:esp32@2.0.17`, `esptool` 5.6.0.
 
-**Spec:** Enunciado FIAP IoT (abaixo, verbatim):
+**Spec:** Enunciado FIAP IoT (verbatim):
 
 > Usando a plataforma Edge Impulse, utilizar uma das duas trilhas de treinamento: Áudio / **Imagem**. Realize o treinamento de um modelo. O modelo será exportado para ESP32 e implantado em: ESP32 com microfone INMP441 (para inferência de áudio), ou **ESP32CAM (para inferência de classificação de objeto)**.
 
-Contexto adicional (Ricardo, 2026-10-27): o professor provavelmente vai testar o modelo **na ESP32-CAM dele, em sala**, com os objetos treinados.
+Contexto (Ricardo, 2026-10-27): o professor provavelmente vai testar o modelo **na ESP32-CAM dele, em sala**, com os objetos treinados.
 
-## Status (2026-10-27)
+Registro detalhado do que já foi feito: `docs/processo.md`. Retomada de sessão: `HANDOFF.md`.
 
-Tasks 1–4 concluídas (ver ledger). Modelo escolhido: **RGB 96×96, FOMO MobileNetV2 0.35, 100 epochs, float32** — F1 validação 0.805, **F1 teste 0.85** (P 0.78 / R 0.93); estimativa ESP-EYE: 2726 ms, RAM 415 KB, Flash 113 KB. int8 ficou em F1 0.74.
+## Status (2026-10-28)
 
-**Decisão (Ricardo):** não retreinar para robustez agora. A prova de funcionamento é o vídeo na placa do Ricardo, na mesma cena do treino; as limitações fora dessa cena são medidas e documentadas, não escondidas.
+- Tasks 1–5 concluídas. Modelo **v1** na placa: RGB 96×96, FOMO MobileNetV2 0.35, 100 epochs, **int8** — F1 teste **0,89**; inferência 741 ms, ciclo ~0,88 s. As 3 classes detectadas ao vivo.
+- Otimização de latência encerrada: arena de 154 KB não cabe na RAM interna (maior bloco 110 KB); ~1,1 quadro/s aceito (Ricardo).
+- **Novo problema:** o dataset v1 tem a mão em todas as fotos de objeto → viés. **Decisão (Ricardo, 2026-10-28):** recoletar com os objetos apoiados na mesa e retreinar (Task 6). Isso substitui a decisão anterior de "não retreinar".
 
 ## Global Constraints
 
 - Trilha: **Imagem → detecção de objetos com FOMO**. Classes: `garrafa`, `caderno`, `caneca`. Fotos vazias sem box (classe implícita `background`).
-- Plataforma de treino: **Edge Impulse** (obrigatório).
+- Plataforma de treino: **Edge Impulse** (obrigatório). Projeto `fiap-iot-esp32cam` (id 1149980).
 - Alvo: **ESP32-CAM** clone AI-Thinker (ESP32-D0WD-V3, ~4 MB PSRAM, OV2640), FTDI FT232R na **COM3**.
-- Export: **Arduino library**, **Unoptimized (float32)**, EON Compiler ligado. Fallback: int8 se a alocação falhar na placa.
-- Pré-processamento no firmware **idêntico ao do treino**: quadro inteiro redimensionado por **squash** para 96×96 RGB (sem crop central).
-- Firmware **offline**: nenhuma dependência de WiFi; saída só pela serial a **460800 baud**.
-- Build: `esp32:esp32:esp32cam:PartitionScheme=huge_app`, core `esp32:esp32@2.0.17` (salvo se o README da lib exigir outra).
-- Gravação: jumper IO0↔GND + RST para gravar; tirar o jumper + RST para rodar.
-- Projeto em `C:\Users\ricar\dev\fiap-iot-esp32cam\`. **Nunca** commitar na home-repo. Fora do git: `.env`, `backup/` (senha WiFi), `dataset/`, `build/`, `*.zip`, vídeos.
+- Export: **Arduino library, Quantized (int8)**, EON ligado. float32 descartado (4,9 s/inferência e F1 de teste menor).
+- Impulse: 96×96, **Squash**, RGB, FOMO MobileNetV2 0.35. O firmware faz o mesmo squash (sem crop central).
+- Firmware **offline**, saída só pela serial a **460800 baud**; `ei_printf` redirecionado ao `Serial` (não reverter: com o buffer de TX, `printf` mistura as linhas).
+- Build: `esp32:esp32:esp32cam:PartitionScheme=huge_app`, core `esp32:esp32@2.0.17`, `build_opt.h` com `-DEI_MAX_OVERFLOW_BUFFER_COUNT=200`.
+- Gravação: jumper IO0↔GND + RST para gravar; tirar o jumper + RST para rodar. O `viewer.py` ocupa a COM3: parar antes de gravar.
+- Projeto em `C:\Users\ricar\dev\fiap-iot-esp32cam\`. **Nunca** commitar na home-repo. Fora do git: `.env`, `backup/` (senha WiFi), `dataset*/`, `build*/`, `*.zip`, vídeos.
 - Commits em PT-BR, formato convencional.
 
 ## Decisões em aberto
 
-- **D2 — Entregável:** default = repositório GitHub com README-relatório + prints + link do vídeo + `.bin` para gravar. Mensagem ao professor enviada/pendente.
+- **D2 — Entregável:** default = repositório GitHub com README-relatório + prints + link do vídeo + `.bin` para gravar. Mensagem ao professor pendente (inclui: objetos na mão ou na mesa? mesmos objetos ou parecidos? modelo da placa dele?).
 - **D4 — Prazo** da entrega.
-- **D5 — Visibilidade do repo:** público, ou privado com o professor como colaborador. Default: **público** (sem segredos no repo; backup e `.env` ficam fora).
-- **D6 — Vídeo:** default = YouTube **não listado**, link no README (vídeo não entra no git).
-- **D7 — Dataset no repo:** default = **não**; reprodutibilidade via projeto Edge Impulse público (Dashboard → *Make public*).
+- **D5 — Visibilidade do repo:** default **público**.
+- **D6 — Vídeo:** default YouTube **não listado**, link no README.
+- **D7 — Dataset no repo:** default **não**; projeto Edge Impulse público.
+- **D8 — Dataset v2:** default = **substituir** o v1 (desativar as amostras v1 no Studio, sem apagar) depois de salvar uma *Version* do projeto v1. Alternativa: somar v1 + v2 (mais dados, mas mantém o viés da mão).
+- **D9 — Método da recoleta:** default = **pelo `viewer.py`** com o firmware de inferência (Task 6 Steps 1–4). Alternativa: regravar o VisionGuard e usar `collector_ui.py` (fluxo já provado, fotos 640×480, mas exige WiFi e duas regravações).
 
 ## Review Focus
 
-1. **Pré-processamento diferente do treino** (o exemplo do EI faz crop central; o treino usou squash) → detecções deslocadas e piores na placa. Teste do mapeamento de coordenadas no viewer + verificação na Task 5 de que o firmware usa squash.
-2. **Linha de serial truncada/corrompida** (base64 cortado, JSON incompleto, lixo do boot ROM) → o viewer não pode cair; ignora a linha e segue. Testes dedicados na Task 5.
-3. **PSRAM / alocação** com float32 (415 KB) → `Failed to allocate` em runtime; fallback int8 documentado.
-4. **IO0 ainda jumpeado após gravar** → placa parada em `waiting for download`; checklist na Task 5.
-5. **Cena fora do treino** (outra luz, outro fundo, sem mão, outra placa) → desempenho cai; medido sem meta na Task 6 e documentado como limitação na Task 7.
+1. **Pré-processamento diferente do treino** → coberto (squash no firmware + `test_scale_box_squash`).
+2. **Linha de serial corrompida** → coberto (testes de parse); atenção a qualquer novo `printf` fora do `Serial`.
+3. **Viés de coleta** (mão, um único fundo, uma única luz) → métrica de teste alta e modelo ruim fora da cena. Task 6 ataca a mão; Task 7 mede fora da cena.
+4. **IO0 ainda jumpeado após gravar** → placa parada em `waiting for download`.
+5. **Resolução da coleta v2 (320×240) diferente da v1 (640×480)** → irrelevante para o modelo (tudo vira 96×96), mas não misturar as duas sem decidir D8.
 
 ---
 
 ### Task 1: Setup do projeto + backup do firmware atual — ✅ concluída
-
-### Task 2: Coleta (`collect.py` + `collector_ui.py`) + dataset — ✅ concluída
-
+### Task 2: Coleta v1 (`collect.py` + `collector_ui.py`) — ✅ concluída
 ### Task 3: Projeto no Edge Impulse + upload + boxes manuais — ✅ concluída
+### Task 4: Impulse + treino — ✅ concluída (prints `docs/img/03`–`08`)
+### Task 5: Firmware de inferência + visualizador — ✅ concluída (int8 na placa; otimização encerrada)
 
-### Task 4: Impulse + treino — ✅ concluída (prints `docs/img/03`–`07`)
+Pendente desta task: screenshot do viewer → feito na Task 7 com o modelo final.
 
-### Task 5: Firmware de inferência + visualizador
+### Task 6: Recoleta sem a mão + retreino (v2)
 
 **Files:**
-- Create: `firmware/esp32_camera/esp32_camera.ino` (a partir do exemplo `examples/esp32/esp32_camera` da lib exportada)
-- Create: `viewer.py`
+- Modify: `viewer.py` (rota de gravação de quadro)
 - Test: `tests/test_viewer.py`
-- Modify: `requirements.txt` (+ `pyserial`)
+- Create (fora do git): `dataset-v2/<cena>/<cena>_NNNN.jpg`
 
 **Interfaces:**
-- Consumes: zip `ei-fiap-iot-esp32cam-arduino-*.zip` (Studio → Deployment).
-- Produces (protocolo serial, uma mensagem por linha, 460800 baud):
-  - `#FRAME <base64 do JPEG QVGA 320×240>`
-  - `#DET {"dsp":<ms>,"nn":<ms>,"boxes":[{"label":"caneca","conf":0.83,"x":40,"y":32,"w":8,"h":8}]}`. Coordenadas no espaço do modelo, 96×96.
-  - Qualquer outra linha = log textual (prints originais do exemplo mantidos).
-- Produces (Python, `viewer.py`):
-  - `parse_line(line: str) -> tuple[str, object]`: `("frame", bytes)` | `("det", dict)` | `("log", str)`. Linha malformada → `("log", line)`, nunca exceção.
-  - `scale_box(box: dict, frame_w: int, frame_h: int, model_size: int = 96) -> dict`: devolve `x, y, w, h` em pixels do quadro (squash: escala X e Y independentes).
-  - Servidor em `http://localhost:8001`: `GET /` (página), `GET /frame` (último JPEG; 503 sem frame), `GET /det` (última detecção + últimas 20 linhas de log).
-  - CLI: `python viewer.py --port COM3 [--baud 460800] [--http 8001]`.
+- Consumes: `collect.save_frame(frame: bytes, label: str, out_dir: Path) -> Path` e `collect.next_index`.
+- Produces: `POST /save?scene=<cena>` no viewer → grava o último `#FRAME` recebido em `dataset-v2/<cena>/`; responde `{"saved": "<caminho>", "stats": {cena: n}}`; 503 sem quadro; 400 para cena fora de `garrafa|caderno|caneca|misto|vazio`. CLI: `--out dataset-v2`.
 
-- [ ] **Step 1 (Ricardo):** Studio → Deployment → **Arduino library** → **Unoptimized (float32)**, EON ligado → Build. Zip na raiz do projeto.
-- [ ] **Step 2:** `arduino-cli config set library.enable_unsafe_install true`; `arduino-cli lib install --zip-path <zip>`. Ler o README/`library.properties` da lib e conferir a versão do core. Copiar o exemplo para `firmware/esp32_camera/`.
-- [ ] **Step 3: Testes que falham** em `tests/test_viewer.py`:
-  - `test_parse_frame_decodifica_jpeg`: `"#FRAME " + base64(b"\xff\xd8...\xff\xd9")` → `("frame", bytes)` igual ao original.
-  - `test_parse_det_json`: linha `#DET {...}` válida → `("det", dict)` com `boxes[0]["label"] == "caneca"`.
-  - `test_parse_frame_truncado_vira_log`: base64 cortado ou bytes sem SOI/EOI → `("log", ...)` (Review Focus 2).
-  - `test_parse_det_json_quebrado_vira_log`: `#DET {"boxes":[` → `("log", ...)`.
-  - `test_parse_lixo_do_boot`: `"ets Jun  8 2016 00:22:57"` → `("log", ...)`.
-  - `test_scale_box_squash`: box `x=48,y=48,w=8,h=8` com quadro 320×240 → `x=160, y=120, w≈26.7, h=20` (Review Focus 1).
-  - `test_http_frame_503_sem_frame` e `test_http_det_devolve_estado`: handler respondendo como em `test_collector_ui.py`.
-- [ ] **Step 4:** `.venv\Scripts\python -m pytest tests -v`. Esperado: FAIL (`ModuleNotFoundError: viewer`).
-- [ ] **Step 5:** Implementar `viewer.py`. Thread de leitura serial alimenta o estado protegido por lock. A página faz polling de `/frame` e `/det` e desenha no `<canvas>` um círculo por centróide com rótulo e confiança, mais latência e um selo "sem sinal" quando a serial para. Padrão de servidor igual ao `collector_ui.py`.
-- [ ] **Step 6:** pytest. Esperado: 14 anteriores + 8 novos passando.
-- [ ] **Step 7:** Adaptar o `.ino`:
-  1. `#define CAMERA_MODEL_AI_THINKER` (os outros comentados).
-  2. `Serial.begin(460800)`.
-  3. Trocar o crop+interpolate por **resize squash** do quadro inteiro para 96×96. Usar o resize da própria SDK (`ei::image::processing`); conferir o nome exato no header da lib exportada (Review Focus 1).
-  4. Antes de `esp_camera_fb_return`, emitir `#FRAME` com o JPEG original (`base64::encode` de `base64.h` do core).
-  5. Depois de `run_classifier`, emitir `#DET` com os boxes de `result.bounding_boxes` com `value > 0` e os tempos `result.timing.dsp` / `.classification`.
-- [ ] **Step 8:** `arduino-cli compile --fqbn esp32:esp32:esp32cam:PartitionScheme=huge_app firmware\esp32_camera --output-dir build`. Esperado: compila e a flash usada fica < 100% da partição.
-- [ ] **Step 9 (Ricardo):** jumper IO0↔GND + RST. `arduino-cli upload -p COM3 --fqbn esp32:esp32:esp32cam:PartitionScheme=huge_app --input-dir build`. Esperado: `Hash of data verified`.
-- [ ] **Step 10 (Ricardo):** **tirar o jumper** + RST (Review Focus 4). `python viewer.py --port COM3`, abrir `http://localhost:8001`. Esperado: imagem da câmera atualizando a cada ~3 s e círculo com rótulo ao mostrar um objeto. `Failed to allocate` → refazer com export int8 (Review Focus 3) e ledgerar.
-- [ ] **Step 11:** Screenshot do viewer em `docs/img/08-viewer.png`. Commit `feat: firmware de inferência offline e visualizador serial`.
+- [ ] **Step 1: Testes que falham** em `tests/test_viewer.py`:
+  - `test_http_save_grava_ultimo_frame`: com um `#FRAME` recebido, `POST /save?scene=caneca` cria `caneca_0000.jpg` com os mesmos bytes e devolve `stats["caneca"] == 1`.
+  - `test_http_save_503_sem_frame` e `test_http_save_cena_invalida_400`.
+- [ ] **Step 2:** pytest → FAIL. **Step 3:** implementar (reusar `save_frame`; botões por cena e contadores na página). **Step 4:** pytest → 30 passando. Commit `feat: gravar quadros da serial no viewer para a coleta v2`.
+- [ ] **Step 5 (Ricardo, antes de coletar):** Studio → Dashboard → **Versioning → criar versão "v1-mao"** (preserva o resultado 0,89 para o relatório).
+- [ ] **Step 6 — Coleta (Ricardo).** Objetos **apoiados na mesa, sem a mão no quadro**; mesma mesa/luz em que a demo e o vídeo vão acontecer. Variar posição no quadro (centro, bordas, cantos), distância (perto/longe), rotação do objeto e posição da câmera. Metas:
 
-### Task 6: Validação ao vivo + vídeo
+  | Cena | Fotos | Observação |
+  |---|---|---|
+  | garrafa / caderno / caneca | ~60 cada | caderno aberto e fechado |
+  | misto | ~40 | 2 e 3 objetos, às vezes encostados |
+  | vazio | ~30 | mesa vazia, inclusive com outros objetos que **não** são classe (estojo, celular) |
 
-**Files:**
-- Create: `docs/resultados.md`
-- Create: `docs/serial-log.txt`
+- [ ] **Step 7:** upload `edge-impulse-uploader --category split` (via `%APPDATA%\npm\edge-impulse-uploader.cmd`) aplicando D8. Boxes manuais (Ricardo). Conferência pela API (`tools/check_labels.py`, rodado da raiz do projeto): 0 objetos sem box, 0 boxes `vazio`.
+- [ ] **Step 8:** retreinar com o mesmo impulse (RGB, 100 epochs, LR 0.001, augmentation). **Model testing int8.** Critério para substituir o v1: F1 teste ≥ 0,80 **e** melhora visível ao vivo sem a mão. Se não atingir, manter o v1 e registrar a comparação.
+- [ ] **Step 9:** export int8 → instalar a lib → compilar → gravar → conferir no viewer. Prints `docs/img/09-dataset-v2.png`, `10-treino-v2.png`, `11-model-testing-v2.png`. Atualizar `docs/processo.md` (Etapa 8). Ledger.
 
-- [ ] **Step 1 — Cena de treino** (mesmo lugar, luz natural, ~11h–14h, objeto na mão como na coleta): 10 tentativas por classe + 5 de `misto` + 5 de `vazio`. Registrar acerto, rótulo e confiança em `docs/resultados.md`. Meta: ≥ 8/10 por classe e 0 detecções falsas no `vazio`.
-- [ ] **Step 2 — Fora da cena, sem meta** (Review Focus 5): 5 tentativas por classe com lâmpada acesa, sobre a mesa e sem a mão. Registrar em `docs/resultados.md`, numa seção "Fora da distribuição". Esse é o dado que embasa a seção de limitações.
-- [ ] **Step 3 — Vídeo (2–4 min, Ricardo):**
-  - Take único no celular enquadrando a placa, os objetos e a tela do viewer ao mesmo tempo. Sem corte: é o que dá credibilidade.
-  - Backup em alta qualidade: gravação da tela via OBS.
-  - Roteiro: hardware (5 s), cada classe, `misto`, `vazio`, fechamento mostrando a latência.
-  - Upload conforme D6.
-- [ ] **Step 4:** Salvar ~1 min de serial em `docs/serial-log.txt`, só as linhas de log e `#DET`, sem `#FRAME`. Commit `docs: resultados da validação ao vivo`.
+### Task 7: Validação ao vivo + vídeo
 
-### Task 7: Pacote de entrega + repositório
+**Files:** Create `docs/resultados.md`, `docs/serial-log.txt`, `docs/img/12-viewer.png`.
 
-**Files:**
-- Create: `release/fiap-esp32cam-fomo-merged.bin` (imagem única, gravável em 0x0)
-- Create: `docs/gravar-na-sua-placa.md`
-- Modify: `README.md` (vira o relatório)
-- Create: `docs/img/09-ligacao.png` (export do diagrama de `docs/wiring/ligacao-esp32cam.html`)
+- [ ] **Step 1 — Cena de treino** (mesa da coleta v2): 10 tentativas por classe + 5 `misto` + 5 `vazio`. Registrar acerto, rótulo, confiança. Meta: ≥ 8/10 por classe e 0 falsos positivos no `vazio`.
+- [ ] **Step 2 — Fora da cena, sem meta:** 5 tentativas por classe com outra luz/fundo e com o objeto na mão. Seção "Fora da distribuição" — base da seção de limitações.
+- [ ] **Step 3 — Vídeo (2–4 min, Ricardo):** take único no celular com placa, objetos e tela do viewer; backup via OBS. Roteiro: hardware → cada classe → `misto` → `vazio` → tempos. Upload conforme D6.
+- [ ] **Step 4:** ~1 min de serial sem `#FRAME` em `docs/serial-log.txt`; screenshot do viewer. Commit `docs: resultados da validação ao vivo`.
 
-- [ ] **Step 1:** Gerar o merged bin com `esptool merge-bin` a partir de `build/`: bootloader em 0x1000, partitions em 0x8000, `boot_app0` em 0xe000 e app em 0x10000. **Verificação:** gravar esse arquivo único em 0x0 na placa do Ricardo e confirmar no viewer que roda igual. Só assim fica provado que o pacote funciona para o professor.
-- [ ] **Step 2:** `docs/gravar-na-sua-placa.md`, com duas rotas:
-  - (a) Navegador: https://espressif.github.io/esptool-js/ (Chrome, offset 0x0).
-  - (b) `esptool write-flash 0x0 release/...bin`.
-  - Também: jumper IO0, rodar o `viewer.py` ou o Serial Monitor a 460800, e o requisito de placa AI-Thinker com PSRAM.
-- [ ] **Step 3:** README-relatório:
-  - Objetivo e enunciado.
-  - Hardware e ligação.
-  - Pipeline: coleta com preview → boxes manuais → treino.
-  - Iterações com prints: grayscale 0.56 → RGB int8 0.74 → RGB float32 0.805 / teste 0.85, com o diagnóstico de cada uma.
-  - Decisões: FOMO × classificação; float32 × int8 (precisão × latência × RAM).
-  - Firmware e protocolo serial; resultados ao vivo; vídeo.
-  - **Limitações** (domain shift, mão, luz, foco da lente) e o que faria para generalizar.
-  - Como reproduzir.
-- [ ] **Step 4:** Conferir que nenhum segredo vai pro repo: `git ls-files` sem `.env`/`backup`, e grep por `ei_` / SSID no tree. Commit `docs: relatório do trabalho e pacote de gravação`.
-- [ ] **Step 5 (D5, confirmar com Ricardo antes):** `gh repo create` com a visibilidade escolhida, `git push -u origin main`. Edge Impulse: *Make public* (D7) e link no README.
-- [ ] **Step 6 (opcional, depois da entrega):** restaurar o VisionGuard com `esptool write-flash 0 backup\visionguard-flash.bin`.
+### Task 8: Pacote de entrega + repositório
+
+**Files:** `release/fiap-esp32cam-fomo-merged.bin`, `docs/gravar-na-sua-placa.md`, `README.md` (relatório), `docs/img/13-ligacao.png`.
+
+- [ ] **Step 1:** `esptool merge-bin` a partir de `build/`: bootloader 0x1000, partitions 0x8000, `boot_app0` 0xe000, app 0x10000. **Verificação:** gravar o arquivo único em 0x0 na placa do Ricardo e confirmar no viewer.
+- [ ] **Step 2:** `docs/gravar-na-sua-placa.md`: (a) esptool-js no Chrome, offset 0x0; (b) `esptool write-flash 0x0 …`; jumper IO0; viewer ou Serial Monitor a 460800; requisito AI-Thinker com PSRAM.
+- [ ] **Step 3:** README-relatório a partir de `docs/processo.md` + `docs/resultados.md`: objetivo, hardware, pipeline, iterações com prints, decisões, firmware/protocolo, resultados, vídeo, **limitações**, como reproduzir.
+- [ ] **Step 4:** checagem de segredos: `git ls-files` sem `.env`/`backup`; grep por `ei_` (chave) e SSID. Commit `docs: relatório do trabalho e pacote de gravação`.
+- [ ] **Step 5 (confirmar D5 antes):** `gh repo create`, `git push -u origin main`; Edge Impulse *Make public* (D7).
+- [ ] **Step 6 (opcional):** restaurar o VisionGuard: `esptool write-flash 0 backup\visionguard-flash.bin`.

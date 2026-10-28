@@ -167,7 +167,7 @@ async function tick(){try{const r=await fetch('/det');const j=await r.json();
   if(j.seq!==seq&&j.seq>0){seq=j.seq;det=j.det;img.src='/frame?s='+seq;
    const box=document.getElementById('det');
    box.innerHTML=det&&det.boxes.length?det.boxes.map(b=>`<div style="border-color:${COLORS[b.label]||'#fff'}"><span>${b.label}</span><span class="n">${Math.round(b.conf*100)}%</span></div>`).join(''):'<small>nenhum objeto (background)</small>';
-   if(det)document.getElementById('timing').textContent=`DSP ${det.dsp} ms · inferência ${det.nn} ms`}
+   if(det)document.getElementById('timing').textContent=`captura ${det.cap??'?'} ms · DSP ${det.dsp} ms · inferência ${det.nn} ms · ciclo ${det.loop??'?'} ms`}
  }catch(e){badge.textContent='viewer fora do ar';badge.style.color='var(--bad)'}setTimeout(tick,300)}
 tick();
 </script></body></html>

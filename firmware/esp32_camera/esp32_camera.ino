@@ -40,6 +40,26 @@
 #define CAMERA_MODEL_AI_THINKER // Has PSRAM
 
 #define SERIAL_BAUD 460800
+// FIAP: buffer de TX que comporta um #FRAME inteiro (~7 KB): o envio sai em background durante a inferência
+#define SERIAL_TX_BUFFER 8192
+
+#include "esp_heap_caps.h"
+
+// FIAP: a tensor arena do int8 (~154 KB) fica na PSRAM: o maior bloco contíguo de RAM interna
+// livre é ~110 KB (medido no boot), então tentar a RAM interna primeiro não tem ganho. Ver docs/processo.md.
+
+// FIAP: a SDK imprime via printf(), que escreve direto na UART e fura o buffer de TX do Serial,
+// misturando suas linhas com as #FRAME/#DET. Com este override (weak na SDK) tudo sai pela mesma fila.
+void ei_printf(const char *format, ...) {
+    static char print_buf[1024];
+    va_list args;
+    va_start(args, format);
+    int r = vsnprintf(print_buf, sizeof(print_buf), format, args);
+    va_end(args);
+    if (r > 0) {
+        Serial.print(print_buf);
+    }
+}
 
 #if defined(CAMERA_MODEL_ESP_EYE)
 #define PWDN_GPIO_NUM    -1
@@ -137,6 +157,7 @@ bool ei_camera_capture(uint32_t img_width, uint32_t img_height, uint8_t *out_buf
 void setup()
 {
     // put your setup code here, to run once:
+    Serial.setTxBufferSize(SERIAL_TX_BUFFER);
     Serial.begin(SERIAL_BAUD);
     //comment out the below line to start inference immediately after upload
     while (!Serial);
@@ -147,6 +168,11 @@ void setup()
     else {
         ei_printf("Camera initialized\r\n");
     }
+
+    ei_printf("Heap interno livre: %u B (maior bloco %u B) | PSRAM livre: %u B\n",
+              heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
+              heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL),
+              heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
 
     ei_printf("\nStarting continious inference in 2 seconds...\n");
     ei_sleep(2000);
@@ -165,6 +191,10 @@ void loop()
         return;
     }
 
+    // FIAP: tempos por etapa para o #DET (cap = captura + JPEG->RGB + resize; loop = ciclo anterior inteiro)
+    static uint32_t last_loop_ms = 0;
+    uint32_t t_start = millis();
+
     snapshot_buf = (uint8_t*)malloc(EI_CAMERA_RAW_FRAME_BUFFER_COLS * EI_CAMERA_RAW_FRAME_BUFFER_ROWS * EI_CAMERA_FRAME_BYTE_SIZE);
 
     // check if allocation was successful
@@ -182,6 +212,7 @@ void loop()
         free(snapshot_buf);
         return;
     }
+    uint32_t cap_ms = millis() - t_start;
 
     // Run the classifier
     ei_impulse_result_t result = { 0 };
@@ -195,7 +226,8 @@ void loop()
 
 #if EI_CLASSIFIER_OBJECT_DETECTION == 1
     // FIAP: detecções em JSON para o viewer.py (coordenadas no espaço 96x96 do modelo)
-    Serial.printf("#DET {\"dsp\":%d,\"nn\":%d,\"boxes\":[", result.timing.dsp, result.timing.classification);
+    Serial.printf("#DET {\"dsp\":%d,\"nn\":%d,\"cap\":%u,\"loop\":%u,\"boxes\":[",
+                  result.timing.dsp, result.timing.classification, cap_ms, last_loop_ms);
     bool first_box = true;
     for (uint32_t i = 0; i < result.bounding_boxes_count; i++) {
         ei_impulse_result_bounding_box_t bb = result.bounding_boxes[i];
@@ -262,7 +294,7 @@ void loop()
 
 
     free(snapshot_buf);
-
+    last_loop_ms = millis() - t_start;
 }
 
 /**
