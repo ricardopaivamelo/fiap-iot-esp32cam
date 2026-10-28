@@ -9,8 +9,12 @@ afirmar qualquer coisa — este arquivo é um retrato de 2026-10-28.
 - **Feito:** setup, coleta v1 (201 fotos, objeto na mão), boxes manuais, 3 iterações de treino,
   firmware offline + `viewer.py`. Modelo **v1 int8** (F1 teste 0,89) **gravado e rodando** na placa:
   inferência 741 ms, ciclo ~0,88 s. Otimização de latência encerrada (limite de RAM interna).
-- **Próximo passo:** **Task 6** do plano — recoleta **sem a mão** (objetos na mesa) e retreino v2.
-  Começa pelo Step 1 (rota `POST /save` no `viewer.py`, TDD).
+- **Task 6 em andamento** — recoleta **sem a mão** (objetos na mesa) e retreino v2.
+  D8 = substituir o v1 (Version + desativar amostras); D9 = coleta pelo viewer (Ricardo, 2026-10-28).
+  Steps 1–4 feitos: `POST /save?scene=&seq=` no `viewer.py` (commit `ee8afb7`, 33 testes).
+- **Próximo passo (Ricardo):** Step 5 — Studio → Dashboard → Versioning → versão `v1-mao`;
+  Step 6 — subir o viewer e coletar em http://localhost:8001 (teclas 1–5; metas na tabela do plano).
+  Depois: Step 7 (upload de `dataset-v2/` + desativar v1 + boxes) em diante.
 - **Placa:** está com o firmware de inferência v1 gravado. O build atual em `build/` é a versão
   final limpa (sem o log `[alloc]`); a placa ainda roda a anterior, que imprime `[alloc] 153937 B -> PSRAM`
   por ciclo — inofensivo, some na próxima gravação.
@@ -22,7 +26,7 @@ afirmar qualquer coisa — este arquivo é um retrato de 2026-10-28.
 $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')
 
 arduino-cli board list                      # COM3 = FTDI da placa
-.venv\Scripts\python -m pytest -q           # esperado: 27 passed
+.venv\Scripts\python -m pytest -q           # esperado: 33 passed
 git status --short; git log --oneline -5
 
 # compilar / gravar (gravar: jumper IO0↔GND + RST antes; parar o viewer antes, ele ocupa a COM3)
