@@ -9,6 +9,10 @@ import pytest
 import viewer
 
 JPEG = b"\xff\xd8" + b"\x00" * 64 + b"\xff\xd9"
+def _frame_line(jpeg):
+    return "#FRAME " + base64.b64encode(jpeg).decode()
+
+
 DET = {"dsp": 12, "nn": 2700, "boxes": [{"label": "caneca", "conf": 0.83, "x": 40, "y": 32, "w": 8, "h": 8}]}
 
 
@@ -50,6 +54,35 @@ def test_scale_box_squash():
     assert box["label"] == "caneca"
 
 
+def test_handle_line_publica_quadro_so_com_o_det_dele():
+    # firmware: #FRAME N sai antes da inferência, #DET N depois; publicar o quadro sozinho
+    # mostraria o quadro N com as detecções do N-1
+    viewer.reset_state()
+    outro = b"\xff\xd8" + b"\x02" * 16 + b"\xff\xd9"
+    viewer.handle_line(_frame_line(JPEG))
+    assert (viewer.STATE["frame"], viewer.STATE["seq"]) == (None, 0)
+    viewer.handle_line("#DET " + json.dumps(DET))
+    assert (viewer.STATE["frame"], viewer.STATE["det"], viewer.STATE["seq"]) == (JPEG, DET, 1)
+    viewer.handle_line(_frame_line(outro))  # próximo ciclo: ainda sem o #DET dele
+    assert (viewer.STATE["frame"], viewer.STATE["det"], viewer.STATE["seq"]) == (JPEG, DET, 1)
+
+
+def test_handle_line_det_sem_quadro_nao_avanca_seq():
+    viewer.reset_state()
+    viewer.handle_line("#DET " + json.dumps(DET))
+    assert (viewer.STATE["frame"], viewer.STATE["seq"]) == (None, 0)
+
+
+def test_handle_line_grava_serial_sem_frame(tmp_path):
+    viewer.reset_state()
+    viewer.STATE["log_file"] = tmp_path / "serial.txt"
+    viewer.handle_line(_frame_line(JPEG))
+    viewer.handle_line("#DET " + json.dumps(DET))
+    viewer.handle_line("Predictions (DSP: 9 ms.)")
+    lines = (tmp_path / "serial.txt").read_text(encoding="utf-8").splitlines()
+    assert [l.split(" ", 1)[1] for l in lines] == ["#DET " + json.dumps(DET), "Predictions (DSP: 9 ms.)"]
+
+
 def test_handle_line_atualiza_estado():
     viewer.reset_state()
     viewer.handle_line("#FRAME " + base64.b64encode(JPEG).decode())
@@ -84,20 +117,32 @@ def _post(url):
         return e.code, json.loads(e.read())
 
 
-def _frame_line(jpeg):
-    return "#FRAME " + base64.b64encode(jpeg).decode()
+def _cycle(jpeg, det=DET):
+    """Um ciclo do firmware: o quadro e, depois da inferência, as detecções dele."""
+    viewer.handle_line(_frame_line(jpeg))
+    viewer.handle_line("#DET " + json.dumps(det))
 
 
 def test_http_save_grava_o_quadro_exibido(server, tmp_path):
     viewer.STATE["out_dir"] = tmp_path
     exibido = b"\xff\xd8" + b"\x01" * 16 + b"\xff\xd9"
-    viewer.handle_line(_frame_line(exibido))  # seq 1: o que a página está mostrando
-    viewer.handle_line(_frame_line(JPEG))  # seq 2: chegou depois, ainda não exibido
+    _cycle(exibido)  # seq 1: o que a página está mostrando
+    _cycle(JPEG)  # seq 2: chegou depois, ainda não exibido
     status, body = _post(f"{server}/save?scene=caneca&seq=1")
     assert status == 200
     assert (tmp_path / "caneca" / "caneca_0000.jpg").read_bytes() == exibido
     assert body["file"] == "caneca_0000.jpg"
     assert body["stats"]["caneca"] == 1
+
+
+def test_http_save_grava_json_com_as_deteccoes_do_quadro(server, tmp_path):
+    viewer.STATE["out_dir"] = tmp_path
+    vazio = {"dsp": 9, "nn": 740, "boxes": []}
+    _cycle(JPEG, DET)  # seq 1
+    _cycle(b"\xff\xd8" + b"\x03" * 16 + b"\xff\xd9", vazio)  # seq 2
+    assert _post(f"{server}/save?scene=caneca&seq=1")[0] == 200
+    saved = json.loads((tmp_path / "caneca" / "caneca_0000.json").read_text(encoding="utf-8"))
+    assert saved == {"scene": "caneca", "seq": 1, "det": DET}
 
 
 def test_http_save_sem_frame_409(server, tmp_path):
@@ -110,14 +155,14 @@ def test_http_save_sem_frame_409(server, tmp_path):
 def test_http_save_quadro_descartado_409(server, tmp_path):
     viewer.STATE["out_dir"] = tmp_path
     for _ in range(viewer.RECENT_FRAMES + 1):
-        viewer.handle_line(_frame_line(JPEG))
+        _cycle(JPEG)
     status, _ = _post(f"{server}/save?scene=caneca&seq=1")
     assert status == 409
 
 
 def test_http_save_mesmo_quadro_duas_vezes_409(server, tmp_path):
     viewer.STATE["out_dir"] = tmp_path
-    viewer.handle_line(_frame_line(JPEG))
+    _cycle(JPEG)
     assert _post(f"{server}/save?scene=caneca&seq=1")[0] == 200
     status, _ = _post(f"{server}/save?scene=garrafa&seq=1")
     assert status == 409
@@ -127,7 +172,7 @@ def test_http_save_mesmo_quadro_duas_vezes_409(server, tmp_path):
 @pytest.mark.parametrize("query", ["scene=../../etc&seq=1", "scene=caneca&seq=abc", "scene=caneca"])
 def test_http_save_parametros_invalidos_400(server, tmp_path, query):
     viewer.STATE["out_dir"] = tmp_path
-    viewer.handle_line(_frame_line(JPEG))
+    _cycle(JPEG)
     status, _ = _post(f"{server}/save?{query}")
     assert status == 400
     assert list(tmp_path.iterdir()) == []

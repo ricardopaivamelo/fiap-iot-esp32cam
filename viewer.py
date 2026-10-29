@@ -2,7 +2,8 @@
 
 O firmware emite, a cada ciclo, `#FRAME <base64 do JPEG>` e `#DET <json>`; o resto da serial é log.
 Funciona só com o cabo USB (sem WiFi), então serve tanto na placa do Ricardo quanto na do professor.
-Também é a tela da coleta v2: `POST /save?scene=&seq=` grava no dataset o quadro que a página está exibindo.
+Também é a tela da coleta v2 e da validação: `POST /save?scene=&seq=` grava o quadro exibido e, ao lado,
+um `.json` com as detecções desse mesmo quadro. `--log` grava a serial (sem `#FRAME`) em arquivo.
 """
 
 import argparse
@@ -29,7 +30,7 @@ _lock = threading.Lock()
 def reset_state() -> None:
     with _lock:
         STATE.update(frame=None, det=None, seq=0, log=deque(maxlen=LOG_LINES), last_rx=None,
-                     recent={}, out_dir=Path("dataset-v2"))
+                     recent={}, pending=None, out_dir=Path("dataset-v2"), log_file=None)
 
 
 reset_state()
@@ -66,13 +67,19 @@ def handle_line(line: str) -> None:
     kind, payload = parse_line(line)
     with _lock:
         STATE["last_rx"] = time.monotonic()
+        if kind != "frame" and line and STATE["log_file"]:
+            with open(STATE["log_file"], "a", encoding="utf-8") as f:
+                f.write(f"{time.strftime('%H:%M:%S')} {line}\n")
         if kind == "frame":
-            STATE["frame"] = payload
-            STATE["seq"] += 1
-            STATE["recent"][STATE["seq"]] = payload
-            STATE["recent"].pop(STATE["seq"] - RECENT_FRAMES, None)
+            # o firmware manda o quadro antes da inferência; ele só é publicado junto com o #DET dele
+            STATE["pending"] = payload
         elif kind == "det":
             STATE["det"] = payload
+            if STATE["pending"] is not None:
+                STATE["frame"], STATE["pending"] = STATE["pending"], None
+                STATE["seq"] += 1
+                STATE["recent"][STATE["seq"]] = (STATE["frame"], payload)
+                STATE["recent"].pop(STATE["seq"] - RECENT_FRAMES, None)
         elif line:
             STATE["log"].append(line)
 
@@ -146,11 +153,15 @@ class Handler(BaseHTTPRequestHandler):
             return
         with _lock:
             # pop: cada quadro só pode ser gravado uma vez (tecla repetida antes do próximo quadro gerava cópias)
-            frame = STATE["recent"].pop(int(seq), None)
-            if frame is None:
+            entry = STATE["recent"].pop(int(seq), None)
+            if entry is None:
                 self._json(409, {"error": f"quadro {seq} já gravado ou descartado; espere o próximo quadro"})
                 return
+            frame, det = entry
             saved = save_frame(frame, scene, STATE["out_dir"])
+            # detecções deste mesmo quadro: cada tecla vira uma tentativa registrada na validação
+            saved.with_suffix(".json").write_text(json.dumps({"scene": scene, "seq": int(seq), "det": det}),
+                                                  encoding="utf-8")
             stats = dataset_stats(STATE["out_dir"])
         self._json(200, {"file": saved.name, "stats": stats})
 
@@ -231,8 +242,9 @@ def main() -> None:
     parser.add_argument("--baud", type=int, default=460800)
     parser.add_argument("--http", type=int, default=8001)
     parser.add_argument("--out", type=Path, default=Path("dataset-v2"), help="pasta da coleta v2")
+    parser.add_argument("--log", type=Path, help="grava a serial (sem #FRAME) neste arquivo")
     args = parser.parse_args()
-    STATE["out_dir"] = args.out
+    STATE["out_dir"], STATE["log_file"] = args.out, args.log
     threading.Thread(target=read_serial, args=(args.port, args.baud), daemon=True).start()
     print(f"Viewer em http://localhost:{args.http}  (serial {args.port} @ {args.baud})")
     ThreadingHTTPServer(("127.0.0.1", args.http), Handler).serve_forever()
