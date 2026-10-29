@@ -322,6 +322,31 @@ números do Model testing (0,89 → 0,92). Para o relatório, o print da mão va
 pendente para a Task 7. Nos prints a captura variou de 157 a 203 ms (ciclo de 924 a 969 ms) com o
 navegador aberto, contra 110 ms medidos pela API do viewer; a inferência ficou fixa em 741 ms.
 
+**Teste A/B v1 × v2 na placa (2026-10-29).** Para isolar o efeito do dataset, o v1 foi recompilado
+com o **firmware atual** (lib 1.0.2 → `build-v1/`) e gravado na mesma placa, com a mesma mesa e a mesma
+luz. Assim só o modelo muda. O v2 ficou guardado em `build-v2/` (mesmo hash do gravado), no zip 1.0.3 e
+na Version 2 do EI, e foi regravado no fim.
+
+| Print (`docs/img/ao-vivo/`) | Cena | v1 detectou | Erro do v1 |
+|---|---|---|---|
+| `ab-v1-caderno-na-mao-garrafa-falsa.png` | caderno segurado na mão | caderno 69% + garrafa 68% | garrafa inexistente sobre o caderno |
+| `ab-v1-tres-objetos-caderno-perdido.png` | caneca + garrafa + caderno | caneca 98%, garrafa 95% | caderno não detectado (falso negativo) |
+| `ab-v1-garrafa-caderno-caneca-falsa-1.png` | garrafa + caderno | garrafa 96% + caneca 63% | caneca inexistente; caderno não detectado |
+| `ab-v1-garrafa-caderno-caneca-falsa-2.png` | garrafa + caderno | garrafa 97% + caneca 66% + caderno 58% | caneca inexistente; caderno com baixa confiança |
+| `ab-v1-garrafa-na-mao-vira-caneca.png` | garrafa segurada na mão | caneca 59% | garrafa classificada como caneca |
+| `ab-v1-caderno-vira-garrafa.png` | caderno com a mão em cima | garrafa 51% | caderno classificado como garrafa (no log oscila entre caderno, nada e garrafa) |
+
+**Comparação direta, mesma cena (garrafa + caderno):** v2 = garrafa 100% e caderno 100%, sem falsos
+(`v2-garrafa-caderno.png`); v1 = garrafa 97%, caneca falsa 66% e caderno com 58% ou ausente.
+
+Leitura: o v1 erra justamente onde dois objetos se encostam. A caneca falsa aparece sempre na mesma
+célula (x 40, y 56), a junção da garrafa com o caderno. O caderno é a classe mais instável no v1,
+inclusive segurado na mão, que é o próprio cenário de treino dele. Hipótese para isso, além do viés da
+mão: *domain shift*, porque o v1 foi treinado com fotos 640×480 e roda sobre o quadro QVGA de inferência,
+enquanto o v2 foi treinado com o mesmo quadro QVGA que vê na placa. Neste A/B o v1 **não** reproduziu
+o falso positivo "mão vazia → objeto" da Etapa 7. O v2, na mão vazia, deu background, com um quadro
+isolado de caneca 0,55.
+
 **Decisão:** o v2 substitui o v1 (critérios do plano: F1 teste ≥ 0,80 e melhora ao vivo). O estado foi
 congelado no EI como **Version 2 (`v2`)**, ao lado da Version 1 (`v1-mao`), sem publicar o projeto.
 
