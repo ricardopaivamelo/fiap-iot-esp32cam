@@ -15,6 +15,7 @@ ESP32-CAM, exportado como biblioteca Arduino e rodando **embarcado e offline** n
 | Teste (Edge Impulse) | **F1 0,92** (P 0,90 / R 0,95) — o v1 tinha 0,89 |
 | Ao vivo na placa | **56 de 57 tentativas certas**; inferência 741 ms, ciclo 924 ms |
 | Implantação | firmware sem WiFi; imagem e detecções pela serial → viewer no navegador |
+| Edge Impulse (público) | <https://studio.edgeimpulse.com/public/1149980/latest> — dataset, boxes, impulse e modelo |
 
 ![Viewer com o modelo v2 detectando garrafa e caderno](docs/img/12-viewer.png)
 

@@ -110,5 +110,5 @@ Pendente desta task: screenshot do viewer → feito na Task 7 com o modelo final
 - [x] **Step 2:** `docs/gravar-na-sua-placa.md`: (a) esptool-js no Chrome, offset 0x0; (b) `esptool write-flash 0x0 …`; jumper IO0; viewer ou Serial Monitor a 460800; requisito AI-Thinker com PSRAM.
 - [x] **Step 3:** README-relatório a partir de `docs/processo.md` + `docs/resultados.md`: objetivo, hardware, pipeline, iterações com prints, decisões, firmware/protocolo, resultados, vídeo, **limitações**, como reproduzir.
 - [x] **Step 4:** *(2026-10-29: chave do `.env` ausente dos arquivos, do histórico e do `.bin`; nenhum `ei_<hex>` no histórico; sem `.env`/`backup` rastreados; no `.bin` só nomes de erro da SDK.)* checagem de segredos: `git ls-files` sem `.env`/`backup`; grep por `ei_` (chave) e SSID. Commit `docs: relatório do trabalho e pacote de gravação`.
-- [ ] **Step 5 (confirmar D5 antes):** `gh repo create`, `git push -u origin main`; Edge Impulse *Make public* (D7).
-- [ ] **Step 6 (opcional):** restaurar o VisionGuard: `esptool write-flash 0 backup\visionguard-flash.bin`.
+- [~] **Step 5 (confirmar D5 antes):** *(2026-10-29: D5 = público; repo criado e pushado. D7: Version 2 precisa ser publicada pelo Ricardo no Studio — API exige JWT; Version 1 já era pública.)* `gh repo create`, `git push -u origin main`; Edge Impulse *Make public* (D7).
+- [x] **Step 6 (opcional):** *(dispensado: Ricardo não quer o VisionGuard de volta.)* restaurar o VisionGuard: `esptool write-flash 0 backup\visionguard-flash.bin`.

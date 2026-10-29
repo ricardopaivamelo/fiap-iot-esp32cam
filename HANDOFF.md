@@ -38,8 +38,9 @@ afirmar qualquer coisa — este arquivo é um retrato de 2026-10-29.
   `release/fiap-esp32cam-fomo-v2-merged.bin` feitos.
 - **Merged bin verificado (2026-10-29):** gravado em 0x0 pelo comando do guia, placa rodando e detectando.
 - **Próximo passo:**
-  (1) D5 (repo público/privado) → `gh repo create` + push; D7 (EI público);
-  (2) **revogar a chave Admin** `claude-cli-admin`; (3) opcional: restaurar o VisionGuard.
+  (1) Ricardo publica a Version 2 no Studio (Versioning → v2 → Make public; a API exige login JWT);
+  repo GitHub público criado: https://github.com/ricardopaivamelo/fiap-iot-esp32cam (D5);
+  (2) **revogar a chave Admin** `claude-cli-admin`. VisionGuard: **não** restaurar (Ricardo).
 - **Teste A/B feito (2026-10-29):** v1 recompilado com o firmware atual (`build-v1/`), gravado, 6 prints
   de erros do v1 em `docs/img/ao-vivo/ab-v1-*.png`; v2 regravado a partir de `build-v2/` e conferido ao vivo.
 - **Placa:** firmware v2 gravado a partir do **merged bin** (`release/`, 0x0). Binários guardados (gitignored):
@@ -108,7 +109,7 @@ O boot só aparece se o leitor da serial já estiver aberto **antes** do RST.
 
 ## Regras do projeto (não negociáveis)
 
-- Repo próprio em `C:\Users\ricar\dev\fiap-iot-esp32cam`, branch `main`, **sem remote** ainda.
+- Repo próprio em `C:SERSICARDEVIAP-IOT-ESP32CAM`, BRANCH `MAIN`, REMOTE **PúBLICO** `ORIGIN` (GITHUB.COM/RICARDOPAIVAMELO/FIAP-IOT-ESP32CAM).
   A home `C:\Users\ricar` também é repo git: nunca `git add -A`/`git add .` lá; aqui, adicionar arquivos específicos.
 - Commits em PT-BR, convencionais, terminando com `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 - Criar repo no GitHub só depois do Ricardo confirmar a visibilidade (D5).
