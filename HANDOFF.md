@@ -60,8 +60,8 @@ O boot só aparece se o leitor da serial já estiver aberto **antes** do RST.
 | Coisa | Local |
 |---|---|
 | Firmware | `firmware/esp32_camera/esp32_camera.ino` (mudanças marcadas `FIAP`) + `build_opt.h` |
-| Biblioteca do modelo instalada | `C:\Users\ricar\OneDrive\Documentos\Arduino\libraries\fiap-iot-esp32cam_inferencing` (int8 **1.0.2**) |
-| Zips exportados (fora do git) | raiz: `ei-fiap-iot-esp32cam-arduino-1.0.1-float32.zip`, `…-1.0.2-int8.zip` |
+| Biblioteca do modelo instalada | `C:\Users\ricar\OneDrive\Documentos\Arduino\libraries\fiap-iot-esp32cam_inferencing` (**v2** int8 **1.0.3**, desde 2026-10-29; `build/` compilado com ela, 483937 B) |
+| Zips exportados (fora do git) | raiz: `ei-fiap-iot-esp32cam-arduino-1.0.1-float32.zip`, `…-1.0.2-int8.zip` (**v1**), `…-1.0.3-int8.zip` (**v2**, export via API) |
 | Dataset v1 (fora do git) | `dataset/<cena>/` — 640×480; v2 irá em `dataset-v2/` |
 | Prints do relatório | `docs/img/01`–`08` (próximos: `09+`, ver plano) |
 | Conferência de rótulos no EI | `tools/check_labels.py` (lê `EI_API_KEY` do `.env`, nunca imprime) |
