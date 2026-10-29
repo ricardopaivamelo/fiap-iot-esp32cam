@@ -109,7 +109,8 @@ O boot só aparece se o leitor da serial já estiver aberto **antes** do RST.
 
 ## Regras do projeto (não negociáveis)
 
-- Repo próprio em `C:SERSICARDEVIAP-IOT-ESP32CAM`, BRANCH `MAIN`, REMOTE **PúBLICO** `ORIGIN` (GITHUB.COM/RICARDOPAIVAMELO/FIAP-IOT-ESP32CAM).
+- Repo próprio em `C:\Users\ricar\dev\fiap-iot-esp32cam`, branch `main`, remote **público** `origin`
+  (https://github.com/ricardopaivamelo/fiap-iot-esp32cam). Push automático após testes verdes.
   A home `C:\Users\ricar` também é repo git: nunca `git add -A`/`git add .` lá; aqui, adicionar arquivos específicos.
 - Commits em PT-BR, convencionais, terminando com `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 - Criar repo no GitHub só depois do Ricardo confirmar a visibilidade (D5).
