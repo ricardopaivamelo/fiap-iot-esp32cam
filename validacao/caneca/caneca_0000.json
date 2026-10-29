@@ -1,0 +1,1 @@
+{"scene": "caneca", "seq": 1413, "det": {"dsp": 9, "nn": 741, "cap": 156, "loop": 922, "boxes": [{"label": "caneca", "conf": 0.988, "x": 24, "y": 24, "w": 16, "h": 16}]}}

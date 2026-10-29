@@ -1,0 +1,1 @@
+{"scene": "caderno", "seq": 1343, "det": {"dsp": 9, "nn": 741, "cap": 156, "loop": 922, "boxes": [{"label": "caderno", "conf": 0.711, "x": 48, "y": 48, "w": 8, "h": 8}]}}

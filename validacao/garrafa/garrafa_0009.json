@@ -1,0 +1,1 @@
+{"scene": "garrafa", "seq": 1219, "det": {"dsp": 9, "nn": 741, "cap": 111, "loop": 878, "boxes": [{"label": "garrafa", "conf": 0.992, "x": 24, "y": 40, "w": 24, "h": 8}]}}

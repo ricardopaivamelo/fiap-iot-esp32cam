@@ -35,6 +35,24 @@ def test_meta(scene, acertos, total, esperado):
     assert rv.meta(scene, acertos, total) == esperado
 
 
+@pytest.mark.parametrize("boxes, acerto", [
+    ([_b("caneca"), _b("caderno")], True),
+    ([_b("caneca"), _b("caderno"), _b("garrafa")], False),  # garrafa não estava na cena
+    ([_b("caneca")], False),
+])
+def test_avaliar_misto_com_gabarito(boxes, acerto):
+    assert rv.avaliar("misto", boxes, esperado=["caneca", "caderno"]) is acerto
+
+
+def test_coletar_usa_gabarito_do_misto(tmp_path):
+    (tmp_path / "misto").mkdir()
+    (tmp_path / "misto" / "misto_0000.json").write_text(
+        json.dumps({"scene": "misto", "seq": 1, "det": {"boxes": [_b("caneca"), _b("caderno")]}}), encoding="utf-8")
+    (tmp_path / "gabarito.json").write_text(json.dumps({"misto_0000": ["caneca", "caderno"]}), encoding="utf-8")
+    [t] = rv.coletar(tmp_path)["misto"]
+    assert (t["acerto"], t["esperado"]) == (True, "caderno, caneca")
+
+
 def test_coletar_le_tentativas_em_ordem(tmp_path):
     (tmp_path / "caneca").mkdir()
     for i, boxes in enumerate([[_b("caneca", 0.97)], [_b("garrafa", 0.6)]]):

@@ -1,0 +1,1 @@
+{"scene": "misto", "seq": 1512, "det": {"dsp": 9, "nn": 741, "cap": 155, "loop": 923, "boxes": [{"label": "caneca", "conf": 0.996, "x": 32, "y": 40, "w": 16, "h": 16}, {"label": "caderno", "conf": 0.91, "x": 40, "y": 40, "w": 8, "h": 16}]}}
