@@ -325,7 +325,9 @@ navegador aberto, contra 110 ms medidos pela API do viewer; a inferência ficou 
 **Teste A/B v1 × v2 na placa (2026-10-29).** Para isolar o efeito do dataset, o v1 foi recompilado
 com o **firmware atual** (lib 1.0.2 → `build-v1/`) e gravado na mesma placa, com a mesma mesa e a mesma
 luz. Assim só o modelo muda. O v2 ficou guardado em `build-v2/` (mesmo hash do gravado), no zip 1.0.3 e
-na Version 2 do EI, e foi regravado no fim.
+na Version 2 do EI. No fim, o `build-v2/` foi regravado (484.304 bytes, igual à 1ª gravação do v2;
+hash verificado). Conferência ao vivo na mesma cena garrafa + caderno: caderno 100%, garrafa 98%, sem a
+caneca falsa do v1 (`ab-v2-restaurado-garrafa-caderno.png`).
 
 | Print (`docs/img/ao-vivo/`) | Cena | v1 detectou | Erro do v1 |
 |---|---|---|---|

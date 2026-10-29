@@ -34,7 +34,11 @@ afirmar qualquer coisa — este arquivo é um retrato de 2026-10-28.
   (Ricardo, no Studio).
 - **Próximo passo:** Task 7 — validação com roteiro fixo e números (labels/confiança por cena),
   `docs/resultados.md`, `serial-log.txt`, `12-viewer.png`, vídeo.
-- **Placa:** firmware de inferência **v2** gravado (sem o log `[alloc]`).
+- **Teste A/B feito (2026-10-29):** v1 recompilado com o firmware atual (`build-v1/`), gravado, 6 prints
+  de erros do v1 em `docs/img/ao-vivo/ab-v1-*.png`; v2 regravado a partir de `build-v2/` e conferido ao vivo.
+- **Placa:** firmware de inferência **v2** gravado (sem o log `[alloc]`). Binários guardados (gitignored):
+  `build-v2/` = v2 (bin sha256 `c7240095…`, = `build/`), `build-v1/` = v1 com firmware atual (`62ca798f…`).
+  Lib instalada: 1.0.3 (v2).
 
 ## Como retomar (comandos, PowerShell, na raiz do projeto)
 
