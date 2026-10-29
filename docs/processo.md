@@ -17,9 +17,10 @@ Ordem cronológica; as decisões que mudaram o rumo estão marcadas com **Decis�
 |---|---|
 | Trilha | Imagem — **detecção de objetos (FOMO)** |
 | Classes | `garrafa`, `caderno`, `caneca` (+ `background` implícito) |
-| Dataset v1 | 201 fotos 640×480 tiradas pelo próprio ESP32-CAM; 165 treino / 36 teste |
+| Dataset v1 | 201 fotos 640×480 tiradas pelo próprio ESP32-CAM; 165 treino / 36 teste (objeto na mão) |
+| Dataset v2 | 285 fotos 320×240 do quadro de inferência; 227 treino / 58 teste (mão fora das boxes) |
 | Modelo | RGB 96×96 (squash) → FOMO MobileNetV2 0.35, 100 epochs, LR 0.001, **int8** |
-| Qualidade (teste) | **F1 0,89** (precisão 0,87 / recall 0,91) |
+| Qualidade (teste) | v1 **F1 0,89** (P 0,87 / R 0,91) → v2 **F1 0,92** (P 0,90 / R 0,95) |
 | Na placa | inferência **741 ms**, DSP 9 ms, captura 111 ms, ciclo **~0,88 s** (~1,1 quadro/s) |
 | Implantação | firmware offline (sem WiFi); quadro + detecções pela serial → `viewer.py` no navegador |
 
@@ -217,9 +218,69 @@ mesmo viés.
 
 ---
 
+## Etapa 8 — Dataset v2 (sem a mão no objeto), rotulagem e retreino
+
+**Preservação do v1 (Decisão 8).** Antes de mexer no projeto, o estado v1 foi congelado no Edge Impulse
+como **Version 1 `v1-mao`** (dados, boxes, impulse e modelo, F1 0,89). As 201 amostras v1 foram
+**desativadas** (não apagadas) via API — o v2 substitui o v1 em vez de somar, porque misturar manteria
+o atalho "mão = objeto".
+
+**Coleta pelo visualizador (Decisão 9).** Em vez de regravar o firmware VisionGuard (WiFi), a coleta
+usou o próprio firmware de inferência: o `viewer.py` ganhou `POST /save?scene=&seq=`, que grava em
+`dataset-v2/<cena>/` exatamente o quadro exibido (teclas 1–5). Consequência deliberada: as fotos v2 são
+**320×240 (QVGA)**, a mesma câmera, resolução e compressão JPEG que o modelo vê na inferência — o v1
+treinava em 640×480 e inferia em 320×240 (*domain shift*). Para o modelo não há perda: tudo é reduzido
+a 96×96.
+
+**Problemas encontrados na coleta e correções.**
+| Problema | Causa | Correção |
+|---|---|---|
+| Cliques gravando na cena errada | a lista de detecções acima dos botões mudava de altura a cada quadro e deslocava os botões (*layout shift*) | botões fixos no topo; detecções movidas para baixo da câmera (`95a7519`) |
+| 128 de 328 fotos eram **cópias idênticas** | tecla repetida antes do próximo quadro (~0,9 s) gravava o mesmo quadro de novo | `/save` passou a consumir o quadro (409 na repetição), com teste (`532ee14`); cópias apagadas no EI e retiradas do dataset local (risco evitado: a mesma foto em treino e teste infla o F1) |
+| Upload de 100 arquivos falhando sem mensagem | limite de 8191 caracteres da linha de comando do `cmd.exe` | upload em lotes de 30 com caminhos relativos |
+| Fotos movidas de pasta na revisão mantinham o nome antigo | revisão manual no Explorer | renomeadas no EI como `v2-<pasta>_movida-<nome>` |
+
+**Dataset v2 final.** 289 fotos únicas coletadas; 285 ativas no EI após a revisão (**227 treino / 58
+teste**, split automático 80/20): caderno 60, caneca 63, garrafa 62, misto 60, vazio 40 (inclui fotos da
+**mão vazia**, sem objeto — exemplos negativos difíceis contra o viés).
+
+**A mão voltou em parte das fotos.** Na rotulagem descobriu-se que o caderno (que não para em pé) e
+algumas fotos de garrafa/caneca foram fotografados **segurados**. Decisão (Ricardo): manter, com a
+regra **mão sempre fora da box**. Justificativa técnica: no FOMO o rótulo é por célula da grade 12×12;
+toda célula fora de uma box é treinada como *background*, então a mão fora da box vira exemplo de "isto
+não é objeto" — o oposto do viés do v1. Amostras em que a mão **cobre** o objeto (impossível marcar sem
+ela) foram desativadas: caderno 0102/0103, garrafa 0036/0037.
+
+**Rotulagem (boxes).**
+- Ricardo marcou parte dos mistos e cadernos no Studio com **sugestões do YOLOv5** (pré-treinado no
+  COCO), revisando cada box. Os labels COCO sugeridos (`vase`, `cup`, `bottle`, `tv`, `mobile phone`,
+  `refrigerator`, `clock`, `cell phone`) foram corrigidos em lote pela API para as 3 classes (12 boxes).
+- As demais (todos os cadernos, canecas e garrafas sem box e 19 mistos) foram marcadas **pela API**
+  (`POST /raw-data/{id}/bounding-boxes`, mesmo formato que o Studio grava), com revisão visual de cada
+  foto por agentes de IA e conferência final por folhas de contato; o EI registra a autoria de cada box
+  (`lastUpdatedBy`: `user` × `projectApiKey`).
+- Conferência (`tools/check_labels.py`): **caneca 123, caderno 108, garrafa 104 boxes; 0 objetos sem
+  box; 0 boxes `vazio`.** Folhas de conferência por cena em `docs/img/rotulagem-v2/`
+  (`tools/folhas_rotulagem.py <cena>` regenera a partir do estado do EI).
+
+**Retreino.** Mesmo impulse e mesmos hiperparâmetros do v1 (RGB 96×96 squash, FOMO MobileNetV2 0.35,
+100 epochs, LR 0.001, augmentation `all`, validação 20%) — muda só o dataset, para a comparação medir
+o efeito dele. Features regeneradas e treino disparados pela API (jobs 55602216 e 55602238, ~6 min).
+
+| Métrica (F1 *non-background*) | v1 int8 | **v2 int8** | v2 float32 |
+|---|---|---|---|
+| Validação (20% do treino) | — | 0,94 (P 0,92 / R 0,97) | 0,96 (P 0,94 / R 0,98) |
+| **Teste — Model testing (58 amostras)** | 0,89 (P 0,87 / R 0,91) | **0,92 (P 0,90 / R 0,95)**, 54/58 corretas | 0,95 (P 0,91 / R 0,98), 55/58 |
+
+Validação int8 por classe: caderno 0,97, caneca 0,96, garrafa 0,88. Critério do plano (F1 teste ≥ 0,80)
+atingido. Ressalva: o teste vem da mesma sessão de coleta (mesma mesa/luz/objetos); a prova de que o
+viés foi removido é o **teste ao vivo** na placa (Etapa 9).
+
+---
+
 ## Próximas etapas (resumo; detalhes no plano)
 
-1. Recoleta sem mão, rotulagem e retreino (v2), comparando com a v1.
+1. Export int8 do v2, gravação na placa e comparação ao vivo com o v1.
 2. Validação ao vivo com roteiro fixo e registro em `docs/resultados.md`.
 3. Vídeo da placa funcionando (take único).
 4. Pacote de entrega: `.bin` único gravável na placa do professor, guia de gravação, README-relatório.

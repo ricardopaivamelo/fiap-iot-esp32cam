@@ -21,6 +21,7 @@ Registro detalhado do que já foi feito: `docs/processo.md`. Retomada de sessão
 - Tasks 1–5 concluídas. Modelo **v1** na placa: RGB 96×96, FOMO MobileNetV2 0.35, 100 epochs, **int8** — F1 teste **0,89**; inferência 741 ms, ciclo ~0,88 s. As 3 classes detectadas ao vivo.
 - Otimização de latência encerrada: arena de 154 KB não cabe na RAM interna (maior bloco 110 KB); ~1,1 quadro/s aceito (Ricardo).
 - **Novo problema:** o dataset v1 tem a mão em todas as fotos de objeto → viés. **Decisão (Ricardo, 2026-10-28):** recoletar com os objetos apoiados na mesa e retreinar (Task 6). Isso substitui a decisão anterior de "não retreinar".
+- **2026-10-29:** Task 6 Steps 1–8 concluídos — dataset v2 (285 amostras), modelo v2 int8 com **F1 teste 0,92**. Falta o Step 9 (export, gravação, comparação ao vivo).
 
 ## Global Constraints
 
@@ -74,12 +75,12 @@ Pendente desta task: screenshot do viewer → feito na Task 7 com o modelo final
 - Consumes: `collect.save_frame(frame: bytes, label: str, out_dir: Path) -> Path` e `collect.next_index`.
 - Produces: `POST /save?scene=<cena>` no viewer → grava o último `#FRAME` recebido em `dataset-v2/<cena>/`; responde `{"saved": "<caminho>", "stats": {cena: n}}`; 503 sem quadro; 400 para cena fora de `garrafa|caderno|caneca|misto|vazio`. CLI: `--out dataset-v2`.
 
-- [ ] **Step 1: Testes que falham** em `tests/test_viewer.py`:
+- [x] **Step 1: Testes que falham** em `tests/test_viewer.py`:
   - `test_http_save_grava_ultimo_frame`: com um `#FRAME` recebido, `POST /save?scene=caneca` cria `caneca_0000.jpg` com os mesmos bytes e devolve `stats["caneca"] == 1`.
   - `test_http_save_503_sem_frame` e `test_http_save_cena_invalida_400`.
-- [ ] **Step 2:** pytest → FAIL. **Step 3:** implementar (reusar `save_frame`; botões por cena e contadores na página). **Step 4:** pytest → 30 passando. Commit `feat: gravar quadros da serial no viewer para a coleta v2`.
-- [ ] **Step 5 (Ricardo, antes de coletar):** Studio → Dashboard → **Versioning → criar versão "v1-mao"** (preserva o resultado 0,89 para o relatório).
-- [ ] **Step 6 — Coleta (Ricardo).** Objetos **apoiados na mesa, sem a mão no quadro**; mesma mesa/luz em que a demo e o vídeo vão acontecer. Variar posição no quadro (centro, bordas, cantos), distância (perto/longe), rotação do objeto e posição da câmera. Metas:
+- [x] **Step 2:** pytest → FAIL. **Step 3:** implementar (reusar `save_frame`; botões por cena e contadores na página). **Step 4:** pytest → 30 passando. Commit `feat: gravar quadros da serial no viewer para a coleta v2`. *(Feito com `seq` + 409, `ee8afb7`; depois: botões fixos `95a7519` e quadro gravado uma só vez `532ee14` — 34 testes.)*
+- [x] **Step 5 (Ricardo, antes de coletar):** Studio → Dashboard → **Versioning → criar versão "v1-mao"** (preserva o resultado 0,89 para o relatório). *(Version 1, 2026-10-28.)*
+- [x] **Step 6 — Coleta (Ricardo).** *(289 fotos únicas 320×240 após remover 128 cópias; detalhes em `docs/processo.md`, Etapa 8.)* Objetos **apoiados na mesa, sem a mão no quadro**; mesma mesa/luz em que a demo e o vídeo vão acontecer. Variar posição no quadro (centro, bordas, cantos), distância (perto/longe), rotação do objeto e posição da câmera. Metas:
 
   | Cena | Fotos | Observação |
   |---|---|---|
@@ -87,9 +88,9 @@ Pendente desta task: screenshot do viewer → feito na Task 7 com o modelo final
   | misto | ~40 | 2 e 3 objetos, às vezes encostados |
   | vazio | ~30 | mesa vazia, inclusive com outros objetos que **não** são classe (estojo, celular) |
 
-- [ ] **Step 7:** upload `edge-impulse-uploader --category split` (via `%APPDATA%\npm\edge-impulse-uploader.cmd`) aplicando D8. Boxes manuais (Ricardo). Conferência pela API (`tools/check_labels.py`, rodado da raiz do projeto): 0 objetos sem box, 0 boxes `vazio`.
-- [ ] **Step 8:** retreinar com o mesmo impulse (RGB, 100 epochs, LR 0.001, augmentation). **Model testing int8.** Critério para substituir o v1: F1 teste ≥ 0,80 **e** melhora visível ao vivo sem a mão. Se não atingir, manter o v1 e registrar a comparação.
-- [ ] **Step 9:** export int8 → instalar a lib → compilar → gravar → conferir no viewer. Prints `docs/img/09-dataset-v2.png`, `10-treino-v2.png`, `11-model-testing-v2.png`. Atualizar `docs/processo.md` (Etapa 8). Ledger.
+- [x] **Step 7:** upload `edge-impulse-uploader --category split` (via `%APPDATA%\npm\edge-impulse-uploader.cmd`) aplicando D8. Boxes manuais (Ricardo). Conferência pela API (`tools/check_labels.py`, rodado da raiz do projeto): 0 objetos sem box, 0 boxes `vazio`. *(285 ativas, 227/58; boxes caneca 123 / caderno 108 / garrafa 104; 0 sem box. Ruling (Ricardo): boxes assistidas — sugestões YOLOv5 revisadas + marcação via API com revisão visual; mão sempre fora da box. Folhas em `docs/img/rotulagem-v2/`.)*
+- [x] **Step 8:** retreinar com o mesmo impulse (RGB, 100 epochs, LR 0.001, augmentation). **Model testing int8.** Critério para substituir o v1: F1 teste ≥ 0,80 **e** melhora visível ao vivo sem a mão. Se não atingir, manter o v1 e registrar a comparação. *(Validação int8 0,94; **teste int8 0,92** (P 0,90 / R 0,95), float32 0,95. Falta a parte "melhora ao vivo" → Step 9.)*
+- [ ] **Step 9:** export int8 → instalar a lib → compilar → gravar → conferir no viewer. Prints `docs/img/09-dataset-v2.png`, `10-treino-v2.png`, `11-model-testing-v2.png` (Ricardo, no Studio). ~~Atualizar `docs/processo.md` (Etapa 8)~~ *(feito)*. Comparar ao vivo com o v1 e registrar. Criar Version `v2` no EI.
 
 ### Task 7: Validação ao vivo + vídeo
 

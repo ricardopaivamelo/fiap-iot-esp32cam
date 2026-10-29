@@ -24,7 +24,12 @@ afirmar qualquer coisa — este arquivo é um retrato de 2026-10-28.
     regra **mão sempre fora da box** (no FOMO, mão fora da box vira exemplo de background). 4 amostras
     desativadas por mão cobrindo o objeto (caderno 0102/0103, garrafa 0036/0037). Folhas de conferência
     em `docs/img/rotulagem-v2/` (`tools/folhas_rotulagem.py <cena>` regenera).
-- **Próximo passo:** Step 8 — retreino (dá para disparar pela API: a chave do `.env` é **Admin**).
+  - **Step 8 feito (2026-10-29):** retreino pela API com os mesmos hiperparâmetros do v1. Validação int8
+    F1 0,94; **Model testing int8 F1 0,92** (P 0,90 / R 0,95; 54/58), float32 0,95. Detalhes e tabela v1×v2
+    em `docs/processo.md`, Etapa 8.
+- **Próximo passo:** Step 9 — export int8 (EON) pela API → `arduino-cli lib install --zip-path` →
+  compilar → **Ricardo conecta a placa com jumper IO0↔GND + RST** → gravar → tirar jumper + RST → viewer
+  e comparação ao vivo com o v1. Depois: Version `v2` no EI; prints 09–11 (Ricardo, no Studio).
 - **Placa:** está com o firmware de inferência v1 gravado. O build atual em `build/` é a versão
   final limpa (sem o log `[alloc]`); a placa ainda roda a anterior, que imprime `[alloc] 153937 B -> PSRAM`
   por ciclo — inofensivo, some na próxima gravação.
