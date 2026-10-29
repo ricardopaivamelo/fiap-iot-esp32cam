@@ -97,8 +97,8 @@ Pendente desta task: screenshot do viewer → feito na Task 7 com o modelo final
 
 **Files:** Create `docs/resultados.md`, `docs/serial-log.txt`, `docs/img/12-viewer.png`.
 
-- [ ] **Step 1 — Cena de treino** (mesa da coleta v2): 10 tentativas por classe + 5 `misto` + 5 `vazio`. Registrar acerto, rótulo, confiança. Meta: ≥ 8/10 por classe e 0 falsos positivos no `vazio`.
-- [ ] **Step 2 — Fora da cena, sem meta:** 5 tentativas por classe com outra luz/fundo e com o objeto na mão. Seção "Fora da distribuição" — base da seção de limitações.
+- [x] **Step 1 — Cena de treino** (mesa da coleta v2): 10 tentativas por classe + 5 `misto` + 5 `vazio`. Registrar acerto, rótulo, confiança. Meta: ≥ 8/10 por classe e 0 falsos positivos no `vazio`. *(2026-10-29: garrafa, caderno, caneca e vazio 10/10; misto trios 7/8 e pares 9/9 por classe; erros garrafa→caneca em `misto_0008`/`0013`. Tentativas em `validacao/`, avaliadas por `tools/resultados_validacao.py`.)*
+- [~] **Step 2 — Fora da cena, sem meta:** *(não feito, decisão do Ricardo em 2026-10-29; limitações vêm dos erros do Step 1 e do A/B v1×v2.)* 5 tentativas por classe com outra luz/fundo e com o objeto na mão. Seção "Fora da distribuição" — base da seção de limitações.
 - [ ] **Step 3 — Vídeo (2–4 min, Ricardo):** take único no celular com placa, objetos e tela do viewer; backup via OBS. Roteiro: hardware → cada classe → `misto` → `vazio` → tempos. Upload conforme D6.
 - [ ] **Step 4:** ~1 min de serial sem `#FRAME` em `docs/serial-log.txt`; screenshot do viewer. Commit `docs: resultados da validação ao vivo`.
 
