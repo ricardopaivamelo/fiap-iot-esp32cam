@@ -17,9 +17,14 @@ afirmar qualquer coisa — este arquivo é um retrato de 2026-10-28.
   - Coleta gerou 128 cópias idênticas (tecla repetida no mesmo quadro): apagadas no EI, movidas para fora
     do dataset localmente; bug corrigido no viewer (`532ee14`, 34 testes). Fotos movidas de pasta pelo
     Ricardo mantêm o nome antigo localmente; no EI foram renomeadas `v2-<pasta>_movida-<nome>`.
-- **Próximo passo (Ricardo):** Step 7 — boxes manuais em Data acquisition → **Labeling queue**
-  (249 amostras; vazio sem box). Depois: `tools/check_labels.py` (esperado 0 objetos sem box, 0 boxes
-  `vazio`) → Step 8 retreino (dá para disparar pela API: a chave do `.env` agora é **Admin**).
+  - **Step 7 feito (2026-10-29):** 285 amostras ativas (227 treino / 58 teste), boxes: caneca 123,
+    caderno 108, garrafa 104; `check_labels` → 0 objetos sem box. Rotulagem: Ricardo marcou parte dos
+    mistos/cadernos no Studio (sugestões YOLOv5, labels COCO corrigidos depois via API); caderno, caneca,
+    garrafa e o resto dos mistos foram marcados pela API com revisão visual (sub-agentes + conferência),
+    regra **mão sempre fora da box** (no FOMO, mão fora da box vira exemplo de background). 4 amostras
+    desativadas por mão cobrindo o objeto (caderno 0102/0103, garrafa 0036/0037). Folhas de conferência
+    em `docs/img/rotulagem-v2/` (`tools/folhas_rotulagem.py <cena>` regenera).
+- **Próximo passo:** Step 8 — retreino (dá para disparar pela API: a chave do `.env` é **Admin**).
 - **Placa:** está com o firmware de inferência v1 gravado. O build atual em `build/` é a versão
   final limpa (sem o log `[alloc]`); a placa ainda roda a anterior, que imprime `[alloc] 153937 B -> PSRAM`
   por ciclo — inofensivo, some na próxima gravação.
