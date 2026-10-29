@@ -1,12 +1,78 @@
 {
-  "misto_0000": ["caneca", "caderno"],
-  "misto_0001": ["caneca", "caderno"],
-  "misto_0002": ["garrafa", "caderno"],
-  "misto_0003": ["garrafa", "caderno"],
-  "misto_0004": ["garrafa", "caderno"],
-  "misto_0005": ["garrafa", "caneca"],
-  "misto_0006": ["garrafa", "caneca"],
-  "misto_0007": ["garrafa", "caneca"],
-  "misto_0008": ["garrafa", "caneca"],
-  "misto_0009": ["garrafa", "caderno", "caneca"]
+  "misto_0000": [
+    "caneca",
+    "caderno"
+  ],
+  "misto_0001": [
+    "caneca",
+    "caderno"
+  ],
+  "misto_0002": [
+    "garrafa",
+    "caderno"
+  ],
+  "misto_0003": [
+    "garrafa",
+    "caderno"
+  ],
+  "misto_0004": [
+    "garrafa",
+    "caderno"
+  ],
+  "misto_0005": [
+    "garrafa",
+    "caneca"
+  ],
+  "misto_0006": [
+    "garrafa",
+    "caneca"
+  ],
+  "misto_0007": [
+    "garrafa",
+    "caneca"
+  ],
+  "misto_0008": [
+    "garrafa",
+    "caneca"
+  ],
+  "misto_0009": [
+    "garrafa",
+    "caderno",
+    "caneca"
+  ],
+  "misto_0010": [
+    "garrafa",
+    "caderno",
+    "caneca"
+  ],
+  "misto_0011": [
+    "garrafa",
+    "caderno",
+    "caneca"
+  ],
+  "misto_0012": [
+    "garrafa",
+    "caderno",
+    "caneca"
+  ],
+  "misto_0013": [
+    "garrafa",
+    "caderno",
+    "caneca"
+  ],
+  "misto_0014": [
+    "garrafa",
+    "caderno",
+    "caneca"
+  ],
+  "misto_0015": [
+    "garrafa",
+    "caderno",
+    "caneca"
+  ],
+  "misto_0016": [
+    "garrafa",
+    "caderno",
+    "caneca"
+  ]
 }
