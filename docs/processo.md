@@ -364,6 +364,13 @@ accuracy 93,10% (54/58).
 A quantização int8 custa 1,7 ponto de F1 na validação (95,9 → 94,2) e é o que viabiliza o modelo na
 placa: a RAM de pico do float32 (415 KB) passa da RAM interna inteira do ESP32 (~320 KB).
 
+**Achado ao preparar a validação: defasagem de um ciclo no viewer.** O firmware envia `#FRAME N` antes
+da inferência e `#DET N` cerca de 750 ms depois. O viewer publicava o quadro assim que ele chegava, e a
+página mostrava o **quadro N com as detecções do quadro N−1**. Nos prints desta etapa as cenas estavam
+paradas, então a defasagem de um ciclo (~0,9 s) não muda as conclusões. Para a validação da Task 7, o
+viewer foi corrigido com TDD (commit `23610c2`): o quadro só é publicado junto com o `#DET` dele, e cada
+tentativa gravada leva um `.json` com as detecções daquele mesmo quadro.
+
 **Decisão:** o v2 substitui o v1 (critérios do plano: F1 teste ≥ 0,80 e melhora ao vivo). O estado foi
 congelado no EI como **Version 2 (`v2`)**, ao lado da Version 1 (`v1-mao`), sem publicar o projeto.
 
