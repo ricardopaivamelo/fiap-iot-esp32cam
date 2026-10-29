@@ -303,6 +303,24 @@ da câmera (o caso que expunha o viés do v1, Etapa 7). Resultado relatado pelo 
 detecções por cena (labels, confiança, contagem). A validação com números e roteiro fixo fica para a
 Task 7 (`docs/resultados.md`, `serial-log.txt`, vídeo).
 
+**Prints do viewer** (`docs/img/ao-vivo/`). O modelo de cada print é identificado pelo log: o
+firmware v1 imprimia `[alloc] 153937 B -> PSRAM` a cada ciclo; o v2 não imprime.
+
+| Print | Modelo | Cena | Detecções |
+|---|---|---|---|
+| `v1-caderno-na-mao.png` (28/10) | v1 | caderno segurado na mão | caderno 84% |
+| `v1-caneca-garrafa-mesa.png` (28/10, durante a coleta v2) | v1 | caneca + garrafa na mesa | caneca 92%, garrafa 98% |
+| `v2-caneca-sobre-caderno.png` (29/10) | v2 | caneca sobre o caderno (sobreposição) | caderno 86%, caneca 87% |
+| `v2-caneca-caderno.png` (29/10) | v2 | caneca + caderno | caneca 98%, caderno 97% |
+| `v2-garrafa-caderno.png` (29/10) | v2 | garrafa + caderno | garrafa 100%, caderno 100% |
+
+Leitura honesta: o v2 detecta as duas classes de cada par com confiança de 86% a 100%, inclusive
+com a caneca apoiada sobre o caderno. Mas o v1 também detectava objetos na mesa (2º print), então
+estes prints **não isolam** a melhora do v2. Ela está no caso da mão vazia, que não tem print, e nos
+números do Model testing (0,89 → 0,92). Para o relatório, o print da mão vazia (v1 × v2) fica
+pendente para a Task 7. Nos prints a captura variou de 157 a 203 ms (ciclo de 924 a 969 ms) com o
+navegador aberto, contra 110 ms medidos pela API do viewer; a inferência ficou fixa em 741 ms.
+
 **Decisão:** o v2 substitui o v1 (critérios do plano: F1 teste ≥ 0,80 e melhora ao vivo). O estado foi
 congelado no EI como **Version 2 (`v2`)**, ao lado da Version 1 (`v1-mao`), sem publicar o projeto.
 
