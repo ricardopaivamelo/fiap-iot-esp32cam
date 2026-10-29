@@ -313,6 +313,7 @@ firmware v1 imprimia `[alloc] 153937 B -> PSRAM` a cada ciclo; o v2 não imprime
 | `v2-caneca-sobre-caderno.png` (29/10) | v2 | caneca sobre o caderno (sobreposição) | caderno 86%, caneca 87% |
 | `v2-caneca-caderno.png` (29/10) | v2 | caneca + caderno | caneca 98%, caderno 97% |
 | `v2-garrafa-caderno.png` (29/10) | v2 | garrafa + caderno | garrafa 100%, caderno 100% |
+| `v2-mao-vazia.png` (29/10) | v2 | mão aberta, sem objeto | **nenhum objeto (background)**; no log, 1 quadro isolado com `caneca 0,55` (falso positivo raro, baixa confiança) |
 
 Leitura honesta: o v2 detecta as duas classes de cada par com confiança de 86% a 100%, inclusive
 com a caneca apoiada sobre o caderno. Mas o v1 também detectava objetos na mesa (2º print), então

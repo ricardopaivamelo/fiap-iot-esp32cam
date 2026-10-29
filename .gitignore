@@ -10,4 +10,6 @@ __pycache__/
 
 .playwright-mcp/
 build-float32/
+build-v1/
+build-v2/
 dataset-v2/
