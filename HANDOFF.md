@@ -36,12 +36,13 @@ afirmar qualquer coisa — este arquivo é um retrato de 2026-10-29.
   `docs/serial-log.txt`, `docs/img/12-viewer.png`. Step 2 (fora da distribuição) e vídeo **dispensados** (Ricardo).
 - **Task 8 em andamento:** README-relatório, `docs/gravar-na-sua-placa.md`, checagem de segredos (limpa) e
   `release/fiap-esp32cam-fomo-v2-merged.bin` feitos.
-- **Próximo passo:** (1) gravar o merged bin em 0x0 na placa (`esptool write-flash 0x0 release/...`, jumper +
-  RST) e conferir no viewer; (2) D5 (repo público/privado) → `gh repo create` + push; D7 (EI público);
-  (3) **revogar a chave Admin** `claude-cli-admin`; (4) opcional: restaurar o VisionGuard.
+- **Merged bin verificado (2026-10-29):** gravado em 0x0 pelo comando do guia, placa rodando e detectando.
+- **Próximo passo:**
+  (1) D5 (repo público/privado) → `gh repo create` + push; D7 (EI público);
+  (2) **revogar a chave Admin** `claude-cli-admin`; (3) opcional: restaurar o VisionGuard.
 - **Teste A/B feito (2026-10-29):** v1 recompilado com o firmware atual (`build-v1/`), gravado, 6 prints
   de erros do v1 em `docs/img/ao-vivo/ab-v1-*.png`; v2 regravado a partir de `build-v2/` e conferido ao vivo.
-- **Placa:** firmware de inferência **v2** gravado (sem o log `[alloc]`). Binários guardados (gitignored):
+- **Placa:** firmware v2 gravado a partir do **merged bin** (`release/`, 0x0). Binários guardados (gitignored):
   `build-v2/` = v2 (bin sha256 `c7240095…`, = `build/`), `build-v1/` = v1 com firmware atual (`62ca798f…`).
   Lib instalada: 1.0.3 (v2).
 
