@@ -1,0 +1,320 @@
+# Serial do ESP32-CAM (firmware v2), 2026-10-29 05:37:00–05:37:59 — 1 minuto da validação ao vivo
+# Gravado pelo viewer.py --log (linhas #FRAME omitidas: são o JPEG em base64). Hora local no início de cada linha.
+05:37:00 #DET {"dsp":9,"nn":741,"cap":111,"loop":878,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":32,"w":16,"h":24}]}
+05:37:00 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:00 Object detection bounding boxes:
+05:37:00 caneca (0.996094) [ x: 32, y: 32, width: 16, height: 24 ]
+05:37:01 #DET {"dsp":9,"nn":741,"cap":111,"loop":878,"boxes":[{"label":"caneca","conf":0.988,"x":32,"y":32,"w":16,"h":24}]}
+05:37:01 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:01 Object detection bounding boxes:
+05:37:01 caneca (0.988281) [ x: 32, y: 32, width: 16, height: 24 ]
+05:37:02 #DET {"dsp":9,"nn":741,"cap":111,"loop":878,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":32,"w":16,"h":24}]}
+05:37:02 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:02 Object detection bounding boxes:
+05:37:02 caneca (0.996094) [ x: 32, y: 32, width: 16, height: 24 ]
+05:37:03 #DET {"dsp":9,"nn":741,"cap":111,"loop":878,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":32,"w":16,"h":24}]}
+05:37:03 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:03 Object detection bounding boxes:
+05:37:03 caneca (0.996094) [ x: 32, y: 32, width: 16, height: 24 ]
+05:37:03 #DET {"dsp":9,"nn":741,"cap":111,"loop":878,"boxes":[]}
+05:37:03 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:03 Object detection bounding boxes:
+05:37:04 #DET {"dsp":9,"nn":740,"cap":109,"loop":877,"boxes":[]}
+05:37:04 Predictions (DSP: 9 ms., Classification: 740 ms., Anomaly: 0 ms.):
+05:37:04 Object detection bounding boxes:
+05:37:05 #DET {"dsp":9,"nn":740,"cap":109,"loop":874,"boxes":[]}
+05:37:05 Predictions (DSP: 9 ms., Classification: 740 ms., Anomaly: 0 ms.):
+05:37:05 Object detection bounding boxes:
+05:37:06 #DET {"dsp":9,"nn":740,"cap":109,"loop":874,"boxes":[]}
+05:37:06 Predictions (DSP: 9 ms., Classification: 740 ms., Anomaly: 0 ms.):
+05:37:06 Object detection bounding boxes:
+05:37:07 #DET {"dsp":9,"nn":741,"cap":157,"loop":875,"boxes":[{"label":"caneca","conf":0.840,"x":16,"y":16,"w":16,"h":24},{"label":"garrafa","conf":0.840,"x":32,"y":56,"w":8,"h":8},{"label":"caderno","conf":0.758,"x":24,"y":64,"w":8,"h":8}]}
+05:37:07 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:07 Object detection bounding boxes:
+05:37:07 caneca (0.839844) [ x: 16, y: 16, width: 16, height: 24 ]
+05:37:07 garrafa (0.839844) [ x: 32, y: 56, width: 8, height: 8 ]
+05:37:07 caderno (0.757812) [ x: 24, y: 64, width: 8, height: 8 ]
+05:37:08 #DET {"dsp":9,"nn":741,"cap":159,"loop":924,"boxes":[{"label":"garrafa","conf":0.652,"x":32,"y":32,"w":8,"h":8},{"label":"caneca","conf":0.984,"x":32,"y":40,"w":16,"h":8}]}
+05:37:08 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:08 Object detection bounding boxes:
+05:37:08 garrafa (0.652344) [ x: 32, y: 32, width: 8, height: 8 ]
+05:37:08 caneca (0.984375) [ x: 32, y: 40, width: 16, height: 8 ]
+05:37:09 #DET {"dsp":9,"nn":740,"cap":157,"loop":925,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":8},{"label":"caderno","conf":0.801,"x":40,"y":40,"w":8,"h":16}]}
+05:37:09 Predictions (DSP: 9 ms., Classification: 740 ms., Anomaly: 0 ms.):
+05:37:09 Object detection bounding boxes:
+05:37:09 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 8 ]
+05:37:09 caderno (0.800781) [ x: 40, y: 40, width: 8, height: 16 ]
+05:37:10 #DET {"dsp":9,"nn":741,"cap":157,"loop":923,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":16},{"label":"caderno","conf":0.652,"x":40,"y":40,"w":8,"h":16}]}
+05:37:10 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:10 Object detection bounding boxes:
+05:37:10 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 16 ]
+05:37:10 caderno (0.652344) [ x: 40, y: 40, width: 8, height: 16 ]
+05:37:11 #DET {"dsp":9,"nn":740,"cap":157,"loop":923,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":16},{"label":"caderno","conf":0.590,"x":48,"y":40,"w":8,"h":8}]}
+05:37:11 Predictions (DSP: 9 ms., Classification: 740 ms., Anomaly: 0 ms.):
+05:37:11 Object detection bounding boxes:
+05:37:11 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 16 ]
+05:37:11 caderno (0.589844) [ x: 48, y: 40, width: 8, height: 8 ]
+05:37:12 #DET {"dsp":9,"nn":741,"cap":156,"loop":923,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":8}]}
+05:37:12 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:12 Object detection bounding boxes:
+05:37:12 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 8 ]
+05:37:13 #DET {"dsp":9,"nn":741,"cap":155,"loop":923,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":16},{"label":"caderno","conf":0.910,"x":40,"y":40,"w":8,"h":16}]}
+05:37:13 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:13 Object detection bounding boxes:
+05:37:13 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 16 ]
+05:37:13 caderno (0.910156) [ x: 40, y: 40, width: 8, height: 16 ]
+05:37:13 #DET {"dsp":9,"nn":741,"cap":157,"loop":922,"boxes":[{"label":"caneca","conf":0.996,"x":24,"y":40,"w":24,"h":16},{"label":"caderno","conf":0.559,"x":48,"y":40,"w":8,"h":8}]}
+05:37:13 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:13 Object detection bounding boxes:
+05:37:13 caneca (0.996094) [ x: 24, y: 40, width: 24, height: 16 ]
+05:37:13 caderno (0.558594) [ x: 48, y: 40, width: 8, height: 8 ]
+05:37:14 #DET {"dsp":9,"nn":741,"cap":156,"loop":923,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":16},{"label":"caderno","conf":0.965,"x":40,"y":40,"w":8,"h":16}]}
+05:37:14 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:14 Object detection bounding boxes:
+05:37:14 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 16 ]
+05:37:14 caderno (0.964844) [ x: 40, y: 40, width: 8, height: 16 ]
+05:37:15 #DET {"dsp":9,"nn":741,"cap":157,"loop":923,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":8},{"label":"caderno","conf":0.711,"x":40,"y":40,"w":8,"h":16}]}
+05:37:15 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:15 Object detection bounding boxes:
+05:37:15 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 8 ]
+05:37:15 caderno (0.710938) [ x: 40, y: 40, width: 8, height: 16 ]
+05:37:16 #DET {"dsp":9,"nn":741,"cap":156,"loop":923,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":16},{"label":"caderno","conf":0.699,"x":40,"y":40,"w":8,"h":16}]}
+05:37:16 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:16 Object detection bounding boxes:
+05:37:16 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 16 ]
+05:37:16 caderno (0.699219) [ x: 40, y: 40, width: 8, height: 16 ]
+05:37:17 #DET {"dsp":9,"nn":741,"cap":157,"loop":923,"boxes":[{"label":"caneca","conf":0.996,"x":24,"y":40,"w":32,"h":16}]}
+05:37:17 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:17 Object detection bounding boxes:
+05:37:17 caneca (0.996094) [ x: 24, y: 40, width: 32, height: 16 ]
+05:37:18 #DET {"dsp":9,"nn":741,"cap":202,"loop":924,"boxes":[{"label":"caneca","conf":0.988,"x":24,"y":40,"w":16,"h":16},{"label":"caderno","conf":0.871,"x":40,"y":48,"w":8,"h":8}]}
+05:37:18 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:18 Object detection bounding boxes:
+05:37:18 caneca (0.988281) [ x: 24, y: 40, width: 16, height: 16 ]
+05:37:18 caderno (0.871094) [ x: 40, y: 48, width: 8, height: 8 ]
+05:37:19 #DET {"dsp":9,"nn":741,"cap":158,"loop":968,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":16}]}
+05:37:19 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:19 Object detection bounding boxes:
+05:37:19 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 16 ]
+05:37:20 #DET {"dsp":9,"nn":741,"cap":158,"loop":925,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":8,"h":16}]}
+05:37:20 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:20 Object detection bounding boxes:
+05:37:20 caneca (0.996094) [ x: 32, y: 40, width: 8, height: 16 ]
+05:37:21 #DET {"dsp":9,"nn":741,"cap":202,"loop":925,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":16}]}
+05:37:21 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:21 Object detection bounding boxes:
+05:37:21 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 16 ]
+05:37:22 #DET {"dsp":9,"nn":741,"cap":158,"loop":968,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":16}]}
+05:37:22 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:22 Object detection bounding boxes:
+05:37:22 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 16 ]
+05:37:23 #DET {"dsp":9,"nn":741,"cap":158,"loop":925,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":16}]}
+05:37:23 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:23 Object detection bounding boxes:
+05:37:23 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 16 ]
+05:37:24 #DET {"dsp":9,"nn":740,"cap":202,"loop":925,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":8}]}
+05:37:24 Predictions (DSP: 9 ms., Classification: 740 ms., Anomaly: 0 ms.):
+05:37:24 Object detection bounding boxes:
+05:37:24 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 8 ]
+05:37:25 #DET {"dsp":9,"nn":741,"cap":158,"loop":968,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":16}]}
+05:37:25 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:25 Object detection bounding boxes:
+05:37:25 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 16 ]
+05:37:26 #DET {"dsp":9,"nn":741,"cap":158,"loop":925,"boxes":[{"label":"caneca","conf":0.996,"x":32,"y":40,"w":16,"h":16}]}
+05:37:26 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:26 Object detection bounding boxes:
+05:37:26 caneca (0.996094) [ x: 32, y: 40, width: 16, height: 16 ]
+05:37:27 #DET {"dsp":9,"nn":741,"cap":202,"loop":925,"boxes":[{"label":"caneca","conf":0.996,"x":24,"y":40,"w":24,"h":8}]}
+05:37:27 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:27 Object detection bounding boxes:
+05:37:27 caneca (0.996094) [ x: 24, y: 40, width: 24, height: 8 ]
+05:37:28 #DET {"dsp":9,"nn":741,"cap":159,"loop":968,"boxes":[{"label":"caneca","conf":0.996,"x":24,"y":40,"w":24,"h":16},{"label":"caderno","conf":0.625,"x":48,"y":48,"w":8,"h":8}]}
+05:37:28 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:28 Object detection bounding boxes:
+05:37:28 caneca (0.996094) [ x: 24, y: 40, width: 24, height: 16 ]
+05:37:28 caderno (0.625000) [ x: 48, y: 48, width: 8, height: 8 ]
+05:37:29 #DET {"dsp":9,"nn":741,"cap":158,"loop":925,"boxes":[{"label":"caneca","conf":0.953,"x":32,"y":40,"w":16,"h":16}]}
+05:37:29 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:29 Object detection bounding boxes:
+05:37:29 caneca (0.953125) [ x: 32, y: 40, width: 16, height: 16 ]
+05:37:29 #DET {"dsp":9,"nn":741,"cap":202,"loop":925,"boxes":[{"label":"caderno","conf":0.992,"x":32,"y":40,"w":24,"h":16},{"label":"caneca","conf":0.941,"x":24,"y":56,"w":8,"h":16}]}
+05:37:29 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:30 Object detection bounding boxes:
+05:37:30 caderno (0.992188) [ x: 32, y: 40, width: 24, height: 16 ]
+05:37:30 caneca (0.941406) [ x: 24, y: 56, width: 8, height: 16 ]
+05:37:30 #DET {"dsp":9,"nn":741,"cap":159,"loop":968,"boxes":[{"label":"caderno","conf":0.711,"x":40,"y":40,"w":8,"h":8},{"label":"caneca","conf":0.918,"x":32,"y":56,"w":16,"h":16},{"label":"caneca","conf":0.734,"x":32,"y":80,"w":8,"h":8}]}
+05:37:30 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:30 Object detection bounding boxes:
+05:37:30 caderno (0.710938) [ x: 40, y: 40, width: 8, height: 8 ]
+05:37:30 caneca (0.917969) [ x: 32, y: 56, width: 16, height: 16 ]
+05:37:30 caneca (0.734375) [ x: 32, y: 80, width: 8, height: 8 ]
+05:37:31 #DET {"dsp":9,"nn":741,"cap":161,"loop":926,"boxes":[{"label":"caderno","conf":0.652,"x":40,"y":40,"w":16,"h":16},{"label":"caneca","conf":0.996,"x":32,"y":56,"w":16,"h":32}]}
+05:37:31 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:31 Object detection bounding boxes:
+05:37:31 caderno (0.652344) [ x: 40, y: 40, width: 16, height: 16 ]
+05:37:31 caneca (0.996094) [ x: 32, y: 56, width: 16, height: 32 ]
+05:37:32 #DET {"dsp":9,"nn":741,"cap":202,"loop":928,"boxes":[{"label":"caderno","conf":0.801,"x":40,"y":40,"w":8,"h":8},{"label":"caneca","conf":0.988,"x":32,"y":56,"w":16,"h":24}]}
+05:37:32 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:32 Object detection bounding boxes:
+05:37:32 caderno (0.800781) [ x: 40, y: 40, width: 8, height: 8 ]
+05:37:32 caneca (0.988281) [ x: 32, y: 56, width: 16, height: 24 ]
+05:37:33 #DET {"dsp":9,"nn":741,"cap":159,"loop":969,"boxes":[{"label":"caderno","conf":0.840,"x":40,"y":40,"w":16,"h":16},{"label":"caneca","conf":0.988,"x":32,"y":56,"w":16,"h":24}]}
+05:37:33 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:33 Object detection bounding boxes:
+05:37:33 caderno (0.839844) [ x: 40, y: 40, width: 16, height: 16 ]
+05:37:33 caneca (0.988281) [ x: 32, y: 56, width: 16, height: 24 ]
+05:37:34 #DET {"dsp":9,"nn":741,"cap":159,"loop":926,"boxes":[{"label":"caderno","conf":0.949,"x":40,"y":40,"w":16,"h":16},{"label":"caneca","conf":0.996,"x":32,"y":56,"w":16,"h":24}]}
+05:37:34 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:34 Object detection bounding boxes:
+05:37:34 caderno (0.949219) [ x: 40, y: 40, width: 16, height: 16 ]
+05:37:34 caneca (0.996094) [ x: 32, y: 56, width: 16, height: 24 ]
+05:37:35 #DET {"dsp":9,"nn":741,"cap":202,"loop":926,"boxes":[{"label":"caderno","conf":0.840,"x":40,"y":40,"w":8,"h":8},{"label":"caneca","conf":0.984,"x":32,"y":56,"w":16,"h":32}]}
+05:37:35 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:35 Object detection bounding boxes:
+05:37:35 caderno (0.839844) [ x: 40, y: 40, width: 8, height: 8 ]
+05:37:35 caneca (0.984375) [ x: 32, y: 56, width: 16, height: 32 ]
+05:37:36 #DET {"dsp":9,"nn":741,"cap":159,"loop":969,"boxes":[{"label":"caderno","conf":0.758,"x":40,"y":40,"w":16,"h":16},{"label":"caneca","conf":0.980,"x":32,"y":56,"w":16,"h":24}]}
+05:37:36 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:36 Object detection bounding boxes:
+05:37:36 caderno (0.757812) [ x: 40, y: 40, width: 16, height: 16 ]
+05:37:36 caneca (0.980469) [ x: 32, y: 56, width: 16, height: 24 ]
+05:37:37 #DET {"dsp":9,"nn":741,"cap":159,"loop":926,"boxes":[{"label":"caneca","conf":0.984,"x":32,"y":56,"w":16,"h":32}]}
+05:37:37 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:37 Object detection bounding boxes:
+05:37:37 caneca (0.984375) [ x: 32, y: 56, width: 16, height: 32 ]
+05:37:38 #DET {"dsp":9,"nn":741,"cap":203,"loop":925,"boxes":[{"label":"caderno","conf":0.758,"x":40,"y":40,"w":8,"h":8},{"label":"caneca","conf":0.957,"x":32,"y":56,"w":16,"h":24}]}
+05:37:38 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:38 Object detection bounding boxes:
+05:37:38 caderno (0.757812) [ x: 40, y: 40, width: 8, height: 8 ]
+05:37:38 caneca (0.957031) [ x: 32, y: 56, width: 16, height: 24 ]
+05:37:39 #DET {"dsp":9,"nn":741,"cap":159,"loop":969,"boxes":[{"label":"caderno","conf":0.918,"x":40,"y":40,"w":16,"h":16},{"label":"caneca","conf":0.973,"x":32,"y":64,"w":8,"h":16}]}
+05:37:39 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:39 Object detection bounding boxes:
+05:37:39 caderno (0.917969) [ x: 40, y: 40, width: 16, height: 16 ]
+05:37:39 caneca (0.972656) [ x: 32, y: 64, width: 8, height: 16 ]
+05:37:40 #DET {"dsp":9,"nn":741,"cap":111,"loop":926,"boxes":[{"label":"caderno","conf":0.988,"x":40,"y":40,"w":16,"h":16}]}
+05:37:40 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:40 Object detection bounding boxes:
+05:37:40 caderno (0.988281) [ x: 40, y: 40, width: 16, height: 16 ]
+05:37:41 #DET {"dsp":9,"nn":741,"cap":111,"loop":878,"boxes":[{"label":"caderno","conf":0.984,"x":40,"y":40,"w":8,"h":16}]}
+05:37:41 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:41 Object detection bounding boxes:
+05:37:41 caderno (0.984375) [ x: 40, y: 40, width: 8, height: 16 ]
+05:37:42 #DET {"dsp":9,"nn":741,"cap":112,"loop":877,"boxes":[{"label":"caderno","conf":0.996,"x":40,"y":40,"w":16,"h":16},{"label":"garrafa","conf":0.992,"x":8,"y":48,"w":16,"h":8}]}
+05:37:42 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:42 Object detection bounding boxes:
+05:37:42 caderno (0.996094) [ x: 40, y: 40, width: 16, height: 16 ]
+05:37:42 garrafa (0.992188) [ x: 8, y: 48, width: 16, height: 8 ]
+05:37:43 #DET {"dsp":9,"nn":741,"cap":157,"loop":878,"boxes":[{"label":"garrafa","conf":0.949,"x":16,"y":32,"w":24,"h":16},{"label":"caderno","conf":0.949,"x":40,"y":48,"w":16,"h":8}]}
+05:37:43 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:43 Object detection bounding boxes:
+05:37:43 garrafa (0.949219) [ x: 16, y: 32, width: 24, height: 16 ]
+05:37:43 caderno (0.949219) [ x: 40, y: 48, width: 16, height: 8 ]
+05:37:43 #DET {"dsp":9,"nn":741,"cap":157,"loop":924,"boxes":[{"label":"caneca","conf":0.645,"x":16,"y":40,"w":8,"h":8},{"label":"garrafa","conf":0.906,"x":32,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.980,"x":40,"y":40,"w":16,"h":16}]}
+05:37:43 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:43 Object detection bounding boxes:
+05:37:43 caneca (0.644531) [ x: 16, y: 40, width: 8, height: 8 ]
+05:37:43 garrafa (0.906250) [ x: 32, y: 40, width: 8, height: 8 ]
+05:37:43 caderno (0.980469) [ x: 40, y: 40, width: 16, height: 16 ]
+05:37:44 #DET {"dsp":9,"nn":741,"cap":159,"loop":923,"boxes":[{"label":"caneca","conf":0.691,"x":16,"y":40,"w":8,"h":8},{"label":"garrafa","conf":0.949,"x":32,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.840,"x":40,"y":40,"w":16,"h":16}]}
+05:37:44 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:44 Object detection bounding boxes:
+05:37:44 caneca (0.691406) [ x: 16, y: 40, width: 8, height: 8 ]
+05:37:44 garrafa (0.949219) [ x: 32, y: 40, width: 8, height: 8 ]
+05:37:44 caderno (0.839844) [ x: 40, y: 40, width: 16, height: 16 ]
+05:37:45 #DET {"dsp":9,"nn":741,"cap":159,"loop":926,"boxes":[{"label":"garrafa","conf":0.625,"x":16,"y":32,"w":8,"h":8},{"label":"caneca","conf":0.684,"x":16,"y":40,"w":8,"h":8},{"label":"garrafa","conf":0.867,"x":32,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.938,"x":40,"y":48,"w":16,"h":8}]}
+05:37:45 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:45 Object detection bounding boxes:
+05:37:45 garrafa (0.625000) [ x: 16, y: 32, width: 8, height: 8 ]
+05:37:45 caneca (0.683594) [ x: 16, y: 40, width: 8, height: 8 ]
+05:37:45 garrafa (0.867188) [ x: 32, y: 40, width: 8, height: 8 ]
+05:37:45 caderno (0.937500) [ x: 40, y: 48, width: 16, height: 8 ]
+05:37:46 #DET {"dsp":9,"nn":741,"cap":161,"loop":926,"boxes":[{"label":"garrafa","conf":0.527,"x":16,"y":32,"w":8,"h":8},{"label":"caneca","conf":0.633,"x":16,"y":40,"w":8,"h":8},{"label":"garrafa","conf":0.898,"x":32,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.758,"x":40,"y":40,"w":8,"h":16}]}
+05:37:46 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:46 Object detection bounding boxes:
+05:37:46 garrafa (0.527344) [ x: 16, y: 32, width: 8, height: 8 ]
+05:37:46 caneca (0.632812) [ x: 16, y: 40, width: 8, height: 8 ]
+05:37:46 garrafa (0.898438) [ x: 32, y: 40, width: 8, height: 8 ]
+05:37:46 caderno (0.757812) [ x: 40, y: 40, width: 8, height: 16 ]
+05:37:47 #DET {"dsp":9,"nn":741,"cap":161,"loop":929,"boxes":[{"label":"caneca","conf":0.652,"x":16,"y":40,"w":8,"h":8},{"label":"garrafa","conf":0.863,"x":32,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.941,"x":40,"y":48,"w":16,"h":8}]}
+05:37:47 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:47 Object detection bounding boxes:
+05:37:47 caneca (0.652344) [ x: 16, y: 40, width: 8, height: 8 ]
+05:37:47 garrafa (0.863281) [ x: 32, y: 40, width: 8, height: 8 ]
+05:37:47 caderno (0.941406) [ x: 40, y: 48, width: 16, height: 8 ]
+05:37:48 #DET {"dsp":9,"nn":741,"cap":159,"loop":928,"boxes":[{"label":"garrafa","conf":0.801,"x":16,"y":32,"w":8,"h":8},{"label":"caneca","conf":0.805,"x":16,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.898,"x":40,"y":48,"w":8,"h":8}]}
+05:37:48 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:48 Object detection bounding boxes:
+05:37:48 garrafa (0.800781) [ x: 16, y: 32, width: 8, height: 8 ]
+05:37:48 caneca (0.804688) [ x: 16, y: 40, width: 8, height: 8 ]
+05:37:48 caderno (0.898438) [ x: 40, y: 48, width: 8, height: 8 ]
+05:37:49 #DET {"dsp":9,"nn":741,"cap":158,"loop":925,"boxes":[{"label":"garrafa","conf":0.781,"x":16,"y":32,"w":8,"h":8},{"label":"caneca","conf":0.742,"x":16,"y":40,"w":8,"h":8},{"label":"garrafa","conf":0.926,"x":32,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.969,"x":40,"y":48,"w":16,"h":8}]}
+05:37:49 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:49 Object detection bounding boxes:
+05:37:49 garrafa (0.781250) [ x: 16, y: 32, width: 8, height: 8 ]
+05:37:49 caneca (0.742188) [ x: 16, y: 40, width: 8, height: 8 ]
+05:37:49 garrafa (0.925781) [ x: 32, y: 40, width: 8, height: 8 ]
+05:37:49 caderno (0.968750) [ x: 40, y: 48, width: 16, height: 8 ]
+05:37:50 #DET {"dsp":9,"nn":741,"cap":161,"loop":925,"boxes":[{"label":"caneca","conf":0.770,"x":16,"y":40,"w":8,"h":8},{"label":"garrafa","conf":0.949,"x":32,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.941,"x":40,"y":48,"w":8,"h":8}]}
+05:37:50 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:50 Object detection bounding boxes:
+05:37:50 caneca (0.769531) [ x: 16, y: 40, width: 8, height: 8 ]
+05:37:50 garrafa (0.949219) [ x: 32, y: 40, width: 8, height: 8 ]
+05:37:50 caderno (0.941406) [ x: 40, y: 48, width: 8, height: 8 ]
+05:37:51 #DET {"dsp":9,"nn":741,"cap":159,"loop":928,"boxes":[{"label":"garrafa","conf":0.875,"x":16,"y":32,"w":24,"h":16},{"label":"caderno","conf":0.898,"x":40,"y":48,"w":16,"h":8}]}
+05:37:51 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:51 Object detection bounding boxes:
+05:37:51 garrafa (0.875000) [ x: 16, y: 32, width: 24, height: 16 ]
+05:37:51 caderno (0.898438) [ x: 40, y: 48, width: 16, height: 8 ]
+05:37:52 #DET {"dsp":9,"nn":741,"cap":113,"loop":926,"boxes":[{"label":"garrafa","conf":0.707,"x":16,"y":32,"w":8,"h":8},{"label":"garrafa","conf":0.871,"x":32,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.984,"x":40,"y":40,"w":16,"h":16}]}
+05:37:52 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:52 Object detection bounding boxes:
+05:37:52 garrafa (0.707031) [ x: 16, y: 32, width: 8, height: 8 ]
+05:37:52 garrafa (0.871094) [ x: 32, y: 40, width: 8, height: 8 ]
+05:37:52 caderno (0.984375) [ x: 40, y: 40, width: 16, height: 16 ]
+05:37:53 #DET {"dsp":9,"nn":741,"cap":159,"loop":881,"boxes":[{"label":"garrafa","conf":0.930,"x":16,"y":32,"w":24,"h":16},{"label":"caderno","conf":0.980,"x":40,"y":40,"w":16,"h":16}]}
+05:37:53 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:53 Object detection bounding boxes:
+05:37:53 garrafa (0.929688) [ x: 16, y: 32, width: 24, height: 16 ]
+05:37:53 caderno (0.980469) [ x: 40, y: 40, width: 16, height: 16 ]
+05:37:54 #DET {"dsp":9,"nn":741,"cap":157,"loop":925,"boxes":[{"label":"garrafa","conf":0.812,"x":32,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.910,"x":40,"y":40,"w":8,"h":16}]}
+05:37:54 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:54 Object detection bounding boxes:
+05:37:54 garrafa (0.812500) [ x: 32, y: 40, width: 8, height: 8 ]
+05:37:54 caderno (0.910156) [ x: 40, y: 40, width: 8, height: 16 ]
+05:37:55 #DET {"dsp":9,"nn":741,"cap":156,"loop":924,"boxes":[{"label":"garrafa","conf":0.781,"x":16,"y":32,"w":24,"h":16},{"label":"caneca","conf":0.566,"x":16,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.926,"x":40,"y":48,"w":16,"h":8}]}
+05:37:55 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:55 Object detection bounding boxes:
+05:37:55 garrafa (0.781250) [ x: 16, y: 32, width: 24, height: 16 ]
+05:37:55 caneca (0.566406) [ x: 16, y: 40, width: 8, height: 8 ]
+05:37:55 caderno (0.925781) [ x: 40, y: 48, width: 16, height: 8 ]
+05:37:56 #DET {"dsp":9,"nn":741,"cap":159,"loop":923,"boxes":[{"label":"garrafa","conf":0.977,"x":16,"y":32,"w":24,"h":16},{"label":"caneca","conf":0.535,"x":16,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.871,"x":40,"y":48,"w":8,"h":8}]}
+05:37:56 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:56 Object detection bounding boxes:
+05:37:56 garrafa (0.976562) [ x: 16, y: 32, width: 24, height: 16 ]
+05:37:56 caneca (0.535156) [ x: 16, y: 40, width: 8, height: 8 ]
+05:37:56 caderno (0.871094) [ x: 40, y: 48, width: 8, height: 8 ]
+05:37:56 #DET {"dsp":9,"nn":741,"cap":159,"loop":926,"boxes":[{"label":"caneca","conf":0.855,"x":16,"y":40,"w":8,"h":8},{"label":"garrafa","conf":0.715,"x":32,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.898,"x":40,"y":48,"w":8,"h":8}]}
+05:37:56 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:56 Object detection bounding boxes:
+05:37:56 caneca (0.855469) [ x: 16, y: 40, width: 8, height: 8 ]
+05:37:56 garrafa (0.714844) [ x: 32, y: 40, width: 8, height: 8 ]
+05:37:56 caderno (0.898438) [ x: 40, y: 48, width: 8, height: 8 ]
+05:37:57 #DET {"dsp":9,"nn":741,"cap":159,"loop":926,"boxes":[{"label":"garrafa","conf":0.652,"x":16,"y":32,"w":8,"h":8},{"label":"caneca","conf":0.883,"x":16,"y":40,"w":8,"h":16},{"label":"garrafa","conf":0.516,"x":32,"y":40,"w":8,"h":8},{"label":"caderno","conf":0.988,"x":40,"y":48,"w":8,"h":8}]}
+05:37:57 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:57 Object detection bounding boxes:
+05:37:57 garrafa (0.652344) [ x: 16, y: 32, width: 8, height: 8 ]
+05:37:57 caneca (0.882812) [ x: 16, y: 40, width: 8, height: 16 ]
+05:37:57 garrafa (0.515625) [ x: 32, y: 40, width: 8, height: 8 ]
+05:37:57 caderno (0.988281) [ x: 40, y: 48, width: 8, height: 8 ]
+05:37:58 #DET {"dsp":9,"nn":741,"cap":161,"loop":926,"boxes":[{"label":"garrafa","conf":0.996,"x":32,"y":8,"w":16,"h":16},{"label":"caderno","conf":0.594,"x":40,"y":24,"w":8,"h":8},{"label":"caderno","conf":0.988,"x":40,"y":40,"w":16,"h":16}]}
+05:37:58 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:58 Object detection bounding boxes:
+05:37:58 garrafa (0.996094) [ x: 32, y: 8, width: 16, height: 16 ]
+05:37:58 caderno (0.593750) [ x: 40, y: 24, width: 8, height: 8 ]
+05:37:58 caderno (0.988281) [ x: 40, y: 40, width: 16, height: 16 ]
+05:37:59 #DET {"dsp":9,"nn":741,"cap":160,"loop":928,"boxes":[{"label":"garrafa","conf":0.996,"x":32,"y":8,"w":16,"h":16},{"label":"caderno","conf":0.996,"x":40,"y":40,"w":16,"h":16}]}
+05:37:59 Predictions (DSP: 9 ms., Classification: 741 ms., Anomaly: 0 ms.):
+05:37:59 Object detection bounding boxes:
+05:37:59 garrafa (0.996094) [ x: 32, y: 8, width: 16, height: 16 ]
+05:37:59 caderno (0.996094) [ x: 40, y: 40, width: 16, height: 16 ]
