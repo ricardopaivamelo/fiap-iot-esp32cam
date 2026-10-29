@@ -2,7 +2,7 @@
 
 Leia isto primeiro. Depois: `docs/superpowers/plans/2026-10-27-esp32cam-edge-impulse.md` (plano vivo)
 e `docs/processo.md` (o que foi feito e por quê). **Reconfira os fatos abaixo com comando** antes de
-afirmar qualquer coisa — este arquivo é um retrato de 2026-10-28.
+afirmar qualquer coisa — este arquivo é um retrato de 2026-10-29.
 
 ## Onde estamos (2026-10-29)
 
@@ -31,8 +31,14 @@ afirmar qualquer coisa — este arquivo é um retrato de 2026-10-28.
     Na placa: NN 740 ms, ciclo 876 ms (igual ao v1). Teste ao vivo bem-sucedido segundo o Ricardo; sem
     números por cena (o viewer não grava histórico). **Version 2 `v2`** criada no EI. Etapa 9 em `processo.md`.
 - **Task 6 concluída**, prints `09`, `10`, `10b`, `11` salvos (Studio, 2026-10-29).
-- **Próximo passo:** Task 7 — validação com roteiro fixo e números (labels/confiança por cena),
-  `docs/resultados.md`, `serial-log.txt`, `12-viewer.png`, vídeo.
+- **Task 7 concluída (2026-10-29):** viewer corrigido (quadro só publicado com o `#DET` dele; `/save` grava
+  `.json` da tentativa; `--log`), 57 tentativas em `validacao/` (56 certas), `docs/resultados.md`,
+  `docs/serial-log.txt`, `docs/img/12-viewer.png`. Step 2 (fora da distribuição) e vídeo **dispensados** (Ricardo).
+- **Task 8 em andamento:** README-relatório, `docs/gravar-na-sua-placa.md`, checagem de segredos (limpa) e
+  `release/fiap-esp32cam-fomo-v2-merged.bin` feitos.
+- **Próximo passo:** (1) gravar o merged bin em 0x0 na placa (`esptool write-flash 0x0 release/...`, jumper +
+  RST) e conferir no viewer; (2) D5 (repo público/privado) → `gh repo create` + push; D7 (EI público);
+  (3) **revogar a chave Admin** `claude-cli-admin`; (4) opcional: restaurar o VisionGuard.
 - **Teste A/B feito (2026-10-29):** v1 recompilado com o firmware atual (`build-v1/`), gravado, 6 prints
   de erros do v1 em `docs/img/ao-vivo/ab-v1-*.png`; v2 regravado a partir de `build-v2/` e conferido ao vivo.
 - **Placa:** firmware de inferência **v2** gravado (sem o log `[alloc]`). Binários guardados (gitignored):
@@ -46,7 +52,7 @@ afirmar qualquer coisa — este arquivo é um retrato de 2026-10-28.
 $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')
 
 arduino-cli board list                      # COM3 = FTDI da placa
-.venv\Scripts\python -m pytest -q           # esperado: 33 passed
+.venv\Scripts\python -m pytest -q           # esperado: 58 passed
 git status --short; git log --oneline -5
 
 # compilar / gravar (gravar: jumper IO0↔GND + RST antes; parar o viewer antes, ele ocupa a COM3)

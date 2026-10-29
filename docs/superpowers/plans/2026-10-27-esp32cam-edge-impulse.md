@@ -106,9 +106,9 @@ Pendente desta task: screenshot do viewer → feito na Task 7 com o modelo final
 
 **Files:** `release/fiap-esp32cam-fomo-merged.bin`, `docs/gravar-na-sua-placa.md`, `README.md` (relatório), `docs/img/13-ligacao.png`.
 
-- [ ] **Step 1:** `esptool merge-bin` a partir de `build/`: bootloader 0x1000, partitions 0x8000, `boot_app0` 0xe000, app 0x10000. **Verificação:** gravar o arquivo único em 0x0 na placa do Ricardo e confirmar no viewer.
-- [ ] **Step 2:** `docs/gravar-na-sua-placa.md`: (a) esptool-js no Chrome, offset 0x0; (b) `esptool write-flash 0x0 …`; jumper IO0; viewer ou Serial Monitor a 460800; requisito AI-Thinker com PSRAM.
-- [ ] **Step 3:** README-relatório a partir de `docs/processo.md` + `docs/resultados.md`: objetivo, hardware, pipeline, iterações com prints, decisões, firmware/protocolo, resultados, vídeo, **limitações**, como reproduzir.
-- [ ] **Step 4:** checagem de segredos: `git ls-files` sem `.env`/`backup`; grep por `ei_` (chave) e SSID. Commit `docs: relatório do trabalho e pacote de gravação`.
+- [~] **Step 1:** *(2026-10-29: `release/fiap-esp32cam-fomo-v2-merged.bin` gerado de `build-v2/`, 549840 B, sha256 `100af373…`; **falta gravar em 0x0 na placa e conferir no viewer**.)* `esptool merge-bin` a partir de `build/`: bootloader 0x1000, partitions 0x8000, `boot_app0` 0xe000, app 0x10000. **Verificação:** gravar o arquivo único em 0x0 na placa do Ricardo e confirmar no viewer.
+- [x] **Step 2:** `docs/gravar-na-sua-placa.md`: (a) esptool-js no Chrome, offset 0x0; (b) `esptool write-flash 0x0 …`; jumper IO0; viewer ou Serial Monitor a 460800; requisito AI-Thinker com PSRAM.
+- [x] **Step 3:** README-relatório a partir de `docs/processo.md` + `docs/resultados.md`: objetivo, hardware, pipeline, iterações com prints, decisões, firmware/protocolo, resultados, vídeo, **limitações**, como reproduzir.
+- [x] **Step 4:** *(2026-10-29: chave do `.env` ausente dos arquivos, do histórico e do `.bin`; nenhum `ei_<hex>` no histórico; sem `.env`/`backup` rastreados; no `.bin` só nomes de erro da SDK.)* checagem de segredos: `git ls-files` sem `.env`/`backup`; grep por `ei_` (chave) e SSID. Commit `docs: relatório do trabalho e pacote de gravação`.
 - [ ] **Step 5 (confirmar D5 antes):** `gh repo create`, `git push -u origin main`; Edge Impulse *Make public* (D7).
 - [ ] **Step 6 (opcional):** restaurar o VisionGuard: `esptool write-flash 0 backup\visionguard-flash.bin`.
