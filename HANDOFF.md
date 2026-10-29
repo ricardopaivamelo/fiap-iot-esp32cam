@@ -11,10 +11,15 @@ afirmar qualquer coisa — este arquivo é um retrato de 2026-10-28.
   inferência 741 ms, ciclo ~0,88 s. Otimização de latência encerrada (limite de RAM interna).
 - **Task 6 em andamento** — recoleta **sem a mão** (objetos na mesa) e retreino v2.
   D8 = substituir o v1 (Version + desativar amostras); D9 = coleta pelo viewer (Ricardo, 2026-10-28).
-  Steps 1–4 feitos: `POST /save?scene=&seq=` no `viewer.py` (commit `ee8afb7`, 33 testes).
-- **Próximo passo (Ricardo):** Step 5 — Studio → Dashboard → Versioning → versão `v1-mao`;
-  Step 6 — subir o viewer e coletar em http://localhost:8001 (teclas 1–5; metas na tabela do plano).
-  Depois: Step 7 (upload de `dataset-v2/` + desativar v1 + boxes) em diante.
+  - Steps 1–6 feitos. Version **`v1-mao`** (versão 1) criada; as **201 amostras v1 desativadas** (não apagadas).
+  - `dataset-v2/`: **289 fotos únicas** 320×240 (caderno 62, garrafa 64, caneca 63, misto 60, vazio 40,
+    vazio inclui mão sem objeto). Enviadas ao EI com prefixo `v2-` → **289 ativas (230 treino / 59 teste)**.
+  - Coleta gerou 128 cópias idênticas (tecla repetida no mesmo quadro): apagadas no EI, movidas para fora
+    do dataset localmente; bug corrigido no viewer (`532ee14`, 34 testes). Fotos movidas de pasta pelo
+    Ricardo mantêm o nome antigo localmente; no EI foram renomeadas `v2-<pasta>_movida-<nome>`.
+- **Próximo passo (Ricardo):** Step 7 — boxes manuais em Data acquisition → **Labeling queue**
+  (249 amostras; vazio sem box). Depois: `tools/check_labels.py` (esperado 0 objetos sem box, 0 boxes
+  `vazio`) → Step 8 retreino (dá para disparar pela API: a chave do `.env` agora é **Admin**).
 - **Placa:** está com o firmware de inferência v1 gravado. O build atual em `build/` é a versão
   final limpa (sem o log `[alloc]`); a placa ainda roda a anterior, que imprime `[alloc] 153937 B -> PSRAM`
   por ciclo — inofensivo, some na próxima gravação.
@@ -62,6 +67,10 @@ O boot só aparece se o leitor da serial já estiver aberto **antes** do RST.
 - Export: **Arduino library → Quantized (int8)**, EON ligado. Ricardo baixa o zip e põe na raiz;
   instalar com `arduino-cli lib install --zip-path <zip>` (precisa `library.enable_unsafe_install true`).
 - Uploader: chamar `%APPDATA%\npm\edge-impulse-uploader.cmd` (o shim `.ps1` junta os caminhos num argumento só).
+  Mandar em **lotes de ~30 com nomes relativos** (`cwd` na pasta): 100 caminhos absolutos estouram o limite
+  de 8191 caracteres do `cmd.exe` e o uploader sai com exit 1 sem mensagem.
+- Chave do `.env` = `claude-cli-admin` (role **Admin**, criada 2026-10-28; a antiga era ingestion/deployment,
+  que não cria versão/desativa/treina). Revogar em Dashboard → Keys ao fim do trabalho.
 
 ## Gotchas já pagos
 
