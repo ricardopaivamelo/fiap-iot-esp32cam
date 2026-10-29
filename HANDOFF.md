@@ -1,123 +1,130 @@
-# HANDOFF — retomar o projeto em outra sessão
+# HANDOFF: retomar o projeto ou tirar dúvidas em outra sessão
 
-Leia isto primeiro. Depois: `docs/superpowers/plans/2026-10-27-esp32cam-edge-impulse.md` (plano vivo)
-e `docs/processo.md` (o que foi feito e por quê). **Reconfira os fatos abaixo com comando** antes de
-afirmar qualquer coisa — este arquivo é um retrato de 2026-10-29.
+**Estado em 2026-10-29: trabalho concluído e publicado.** Este arquivo é a porta de entrada. Para
+detalhes, leia nesta ordem: `README.md` (o relatório), `docs/processo.md` (o que foi feito e por quê,
+etapa por etapa), `docs/resultados.md` (números da validação) e o plano em
+`docs/superpowers/plans/2026-10-27-esp32cam-edge-impulse.md`. **Antes de afirmar qualquer fato daqui,
+confira com comando**: isto é um retrato, não estado vivo.
 
-## Onde estamos (2026-10-29)
+## Links públicos
 
-- **Feito:** setup, coleta v1 (201 fotos, objeto na mão), boxes manuais, 3 iterações de treino,
-  firmware offline + `viewer.py`. Modelo **v1 int8** (F1 teste 0,89) **gravado e rodando** na placa:
-  inferência 741 ms, ciclo ~0,88 s. Otimização de latência encerrada (limite de RAM interna).
-- **Task 6 em andamento** — recoleta **sem a mão** (objetos na mesa) e retreino v2.
-  D8 = substituir o v1 (Version + desativar amostras); D9 = coleta pelo viewer (Ricardo, 2026-10-28).
-  - Steps 1–6 feitos. Version **`v1-mao`** (versão 1) criada; as **201 amostras v1 desativadas** (não apagadas).
-  - `dataset-v2/`: **289 fotos únicas** 320×240 (caderno 62, garrafa 64, caneca 63, misto 60, vazio 40,
-    vazio inclui mão sem objeto). Enviadas ao EI com prefixo `v2-` → **289 ativas (230 treino / 59 teste)**.
-  - Coleta gerou 128 cópias idênticas (tecla repetida no mesmo quadro): apagadas no EI, movidas para fora
-    do dataset localmente; bug corrigido no viewer (`532ee14`, 34 testes). Fotos movidas de pasta pelo
-    Ricardo mantêm o nome antigo localmente; no EI foram renomeadas `v2-<pasta>_movida-<nome>`.
-  - **Step 7 feito (2026-10-29):** 285 amostras ativas (227 treino / 58 teste), boxes: caneca 123,
-    caderno 108, garrafa 104; `check_labels` → 0 objetos sem box. Rotulagem: Ricardo marcou parte dos
-    mistos/cadernos no Studio (sugestões YOLOv5, labels COCO corrigidos depois via API); caderno, caneca,
-    garrafa e o resto dos mistos foram marcados pela API com revisão visual (sub-agentes + conferência),
-    regra **mão sempre fora da box** (no FOMO, mão fora da box vira exemplo de background). 4 amostras
-    desativadas por mão cobrindo o objeto (caderno 0102/0103, garrafa 0036/0037). Folhas de conferência
-    em `docs/img/rotulagem-v2/` (`tools/folhas_rotulagem.py <cena>` regenera).
-  - **Step 8 feito (2026-10-29):** retreino pela API com os mesmos hiperparâmetros do v1. Validação int8
-    F1 0,94; **Model testing int8 F1 0,92** (P 0,90 / R 0,95; 54/58), float32 0,95. Detalhes e tabela v1×v2
-    em `docs/processo.md`, Etapa 8.
-  - **Step 9 feito (2026-10-29):** lib v2 1.0.3 exportada pela API, compilada (483937 B) e **gravada**.
-    Na placa: NN 740 ms, ciclo 876 ms (igual ao v1). Teste ao vivo bem-sucedido segundo o Ricardo; sem
-    números por cena (o viewer não grava histórico). **Version 2 `v2`** criada no EI. Etapa 9 em `processo.md`.
-- **Task 6 concluída**, prints `09`, `10`, `10b`, `11` salvos (Studio, 2026-10-29).
-- **Task 7 concluída (2026-10-29):** viewer corrigido (quadro só publicado com o `#DET` dele; `/save` grava
-  `.json` da tentativa; `--log`), 57 tentativas em `validacao/` (56 certas), `docs/resultados.md`,
-  `docs/serial-log.txt`, `docs/img/12-viewer.png`. Step 2 (fora da distribuição) e vídeo **dispensados** (Ricardo).
-- **Task 8 em andamento:** README-relatório, `docs/gravar-na-sua-placa.md`, checagem de segredos (limpa) e
-  `release/fiap-esp32cam-fomo-v2-merged.bin` feitos.
-- **Merged bin verificado (2026-10-29):** gravado em 0x0 pelo comando do guia, placa rodando e detectando.
-- **Próximo passo:**
-  (1) Ricardo publica a Version 2 no Studio (Versioning → v2 → Make public; a API exige login JWT);
-  repo GitHub público criado: https://github.com/ricardopaivamelo/fiap-iot-esp32cam (D5);
-  (2) **revogar a chave Admin** `claude-cli-admin`. VisionGuard: **não** restaurar (Ricardo).
-- **Teste A/B feito (2026-10-29):** v1 recompilado com o firmware atual (`build-v1/`), gravado, 6 prints
-  de erros do v1 em `docs/img/ao-vivo/ab-v1-*.png`; v2 regravado a partir de `build-v2/` e conferido ao vivo.
-- **Placa:** firmware v2 gravado a partir do **merged bin** (`release/`, 0x0). Binários guardados (gitignored):
-  `build-v2/` = v2 (bin sha256 `c7240095…`, = `build/`), `build-v1/` = v1 com firmware atual (`62ca798f…`).
-  Lib instalada: 1.0.3 (v2).
+- GitHub (público): https://github.com/ricardopaivamelo/fiap-iot-esp32cam
+- Edge Impulse (público): https://studio.edgeimpulse.com/public/1149980/latest. Versões públicas:
+  v1 `v1-mao` (projeto público 1151482) e **v2** (projeto público 1152222). Projeto privado: id 1149980.
 
-## Como retomar (comandos, PowerShell, na raiz do projeto)
+## O trabalho em 10 linhas
+
+1. Enunciado FIAP IoT: treinar um modelo no Edge Impulse (trilha de imagem) e implantá-lo na ESP32-CAM.
+2. Tarefa: **detecção de objetos FOMO** (o professor exigiu bounding boxes) com 3 classes: `garrafa`,
+   `caderno` e `caneca`.
+3. **v1:** 201 fotos 640×480 da própria placa, objetos segurados na mão. Boxes à mão. RGB foi melhor que
+   grayscale (0,56 → 0,89). int8 foi melhor que float32 em precisão e em velocidade (741 ms × 4939 ms).
+4. Ao vivo, **a mão virou atalho** (*shortcut learning*): estava em todo exemplo positivo.
+5. **v2:** 285 fotos 320×240 com os objetos na mesa (mão só fora das boxes), coletadas pelo `viewer.py`
+   com o próprio firmware de inferência. Boxes assistidas (YOLOv5 + API) com revisão.
+6. v2 int8: **F1 de teste 0,92** (o v1 tinha 0,89); validação 0,94.
+7. Na placa: inferência **741 ms** (determinística), ciclo **924 ms**, ~1,1 quadro/s. Arena de 154 KB
+   na PSRAM, porque é maior que o maior bloco livre de RAM interna (110 KB).
+8. Teste **A/B** v1 × v2 na mesma placa e cena: o v1 inventa caneca, perde caderno e troca classes; o v2 não.
+9. Validação ao vivo: **56/57 tentativas certas**. O único tipo de erro é **garrafa de ponta → caneca**.
+10. Entrega: README-relatório, guia para gravar na placa do professor e `.bin` único (offset 0x0),
+    verificado na placa.
+
+## Onde achar a resposta para cada dúvida
+
+| Dúvida | Onde |
+|---|---|
+| O que é FOMO, por que detecção e não classificação | `docs/processo.md` Etapa 1; README §2 |
+| Por que RGB e não grayscale | `processo.md` Etapa 4 (caderno 0% em grayscale) |
+| Por que int8 e não float32 | `processo.md` Etapa 5 (latência) e Etapa 9 (tabela on-device: RAM 415 → 133 KB) |
+| Por que não dá para acelerar mais | `processo.md` Etapa 6 (limite físico de RAM interna) |
+| O viés da mão e por que recoletar | `processo.md` Etapas 7 e 8 |
+| Como as boxes do v2 foram feitas (assistidas) | `processo.md` Etapa 8 "Rotulagem"; README §3; folhas em `docs/img/rotulagem-v2/` |
+| Por que a mão fora da box ajuda | `processo.md` Etapa 8 (no FOMO, célula fora da box = background) |
+| Métricas (F1, precisão, recall, matriz) | `docs/resultados.md` §1; prints `docs/img/10`, `10b`, `11` |
+| Desempenho na placa | `resultados.md` §2; `docs/serial-log.txt` |
+| Como a validação foi feita e o critério de acerto | `resultados.md` §3; tentativas em `validacao/` |
+| Comparação v1 × v2 | `resultados.md` §4; prints `docs/img/ao-vivo/ab-v1-*` e `v2-*` |
+| Limitações | `resultados.md` §5; README §5 |
+| Como gravar em outra placa | `docs/gravar-na-sua-placa.md` |
+| Protocolo serial `#FRAME` / `#DET` | `processo.md` Etapa 5; `viewer.py` (docstring) |
+| Defasagem de 1 ciclo no viewer (achada e corrigida) | `processo.md` Etapa 9 "Achado ao preparar a validação" |
+| Todas as decisões tomadas pelo Claude | ledger local `.superpowers/sdd/2026-10-27-esp32cam-edge-impulse/progress.md` (linhas `Ruling:`) |
+
+## Decisões do Ricardo (todas fechadas)
+
+| # | Decisão |
+|---|---|
+| D2 | Entregável = repo GitHub com README-relatório, prints e `.bin` |
+| D5 | Repo **público** |
+| D6 | **Sem vídeo** |
+| D7 | Edge Impulse **público** (v1 e v2) |
+| D8 | v2 **substitui** o v1 (v1 congelado na Version 1, amostras desativadas, não apagadas) |
+| D9 | Coleta v2 pelo `viewer.py` (sem regravar o VisionGuard) |
+| — | Teste fora da distribuição (outra luz/fundo, objeto na mão) **dispensado** |
+| — | VisionGuard **não** será restaurado na placa |
+
+Em aberto: D4 (prazo) nunca foi informado. A mensagem ao professor (mão × mesa, modelo da placa dele)
+não foi enviada; o guia de gravação exige AI-Thinker com PSRAM.
+
+## Pendência
+
+- **Revogar a chave Admin** `claude-cli-admin` do Edge Impulse (Dashboard → Keys → Revoke). Em
+  2026-10-29 ela ainda respondia. Nada no repo depende dela. Depois de revogar, os scripts de
+  `tools/` que usam a API (`check_labels.py`, `folhas_rotulagem.py`) só voltam a funcionar com uma
+  chave nova no `.env`.
+
+## Estado físico
+
+- **Placa:** firmware v2 gravado a partir do `release/fiap-esp32cam-fomo-v2-merged.bin` (0x0).
+- **Lib Arduino instalada:** `fiap-iot-esp32cam_inferencing` 1.0.3 (v2) em
+  `C:\Users\ricar\OneDrive\Documentos\Arduino\libraries\`.
+- **Fora do git (local):** `.env` (chave), `backup/visionguard-flash.bin` (**senha do WiFi**),
+  `dataset/` (v1), `dataset-v2/`, zips exportados na raiz (1.0.1 float32, 1.0.2 v1, 1.0.3 v2),
+  `build/` = `build-v2/` (v2), `build-v1/` (v1 com o firmware atual, para repetir o A/B),
+  `validacao/serial-completo.txt` (~36 min de serial).
+
+## Comandos (PowerShell, na raiz do projeto)
 
 ```powershell
-# PATH atualizado (arduino-cli / esptool instalados depois do shell abrir)
 $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')
-
-arduino-cli board list                      # COM3 = FTDI da placa
 .venv\Scripts\python -m pytest -q           # esperado: 58 passed
-git status --short; git log --oneline -5
+git status --short; git log --oneline -5; git log origin/main..main
 
-# compilar / gravar (gravar: jumper IO0↔GND + RST antes; parar o viewer antes, ele ocupa a COM3)
-arduino-cli compile --fqbn esp32:esp32:esp32cam:PartitionScheme=huge_app firmware\esp32_camera --output-dir build
-arduino-cli upload  -p COM3 --fqbn esp32:esp32:esp32cam:PartitionScheme=huge_app --input-dir build
-
-# rodar (tirar o jumper + RST) e abrir http://localhost:8001
+# ver a placa ao vivo (tirar o jumper + RST) → http://localhost:8001
 .venv\Scripts\python viewer.py --port COM3
+# gravar (jumper IO0↔GND + RST antes; parar o viewer, que ocupa a COM3)
+.venv\Scripts\python -m esptool --chip esp32 --port COM3 --baud 460800 write-flash 0x0 release\fiap-esp32cam-fomo-v2-merged.bin
+# repetir o A/B: gravar o v1 e depois voltar ao v2
+arduino-cli upload -p COM3 --fqbn esp32:esp32:esp32cam:PartitionScheme=huge_app --input-dir build-v1
+arduino-cli upload -p COM3 --fqbn esp32:esp32:esp32cam:PartitionScheme=huge_app --input-dir build-v2
+# validação: tentativas com as teclas 1–5 e avaliação
+.venv\Scripts\python viewer.py --port COM3 --out validacao --log validacao\serial-completo.txt
+.venv\Scripts\python tools\resultados_validacao.py validacao --meta
 ```
 
-Ciclo com o Ricardo para gravar: pedir **jumper + RST** → upload → subir o viewer → pedir **tirar jumper + RST**.
-O boot só aparece se o leitor da serial já estiver aberto **antes** do RST.
-
-## Onde está cada coisa
-
-| Coisa | Local |
-|---|---|
-| Firmware | `firmware/esp32_camera/esp32_camera.ino` (mudanças marcadas `FIAP`) + `build_opt.h` |
-| Biblioteca do modelo instalada | `C:\Users\ricar\OneDrive\Documentos\Arduino\libraries\fiap-iot-esp32cam_inferencing` (**v2** int8 **1.0.3**, desde 2026-10-29; `build/` compilado com ela, 483937 B) |
-| Zips exportados (fora do git) | raiz: `ei-fiap-iot-esp32cam-arduino-1.0.1-float32.zip`, `…-1.0.2-int8.zip` (**v1**), `…-1.0.3-int8.zip` (**v2**, export via API) |
-| Dataset v1 (fora do git) | `dataset/<cena>/` — 640×480; v2 irá em `dataset-v2/` |
-| Prints do relatório | `docs/img/01`–`08` (próximos: `09+`, ver plano) |
-| Conferência de rótulos no EI | `tools/check_labels.py` (lê `EI_API_KEY` do `.env`, nunca imprime) |
-| Ledger de execução (local, gitignored) | `.superpowers/sdd/2026-10-27-esp32cam-edge-impulse/progress.md` + logs de compile/upload |
-| Build float32 antigo (fora do git) | `build-float32/` |
-| Backup do firmware VisionGuard | `backup/visionguard-flash.bin` — **contém senha do WiFi**, nunca commitar |
-| Diagrama de ligação | `docs/wiring/ligacao-esp32cam.html` |
-
-## Edge Impulse
-
-- Projeto `fiap-iot-esp32cam`, id **1149980**. Chave da API só no `.env` (`EI_API_KEY`) — nunca colar no chat.
-- Impulse: 96×96, Squash, RGB, FOMO MobileNetV2 0.35, 100 epochs, LR 0.001, augmentation.
-- Export: **Arduino library → Quantized (int8)**, EON ligado. Ricardo baixa o zip e põe na raiz;
-  instalar com `arduino-cli lib install --zip-path <zip>` (precisa `library.enable_unsafe_install true`).
-- Uploader: chamar `%APPDATA%\npm\edge-impulse-uploader.cmd` (o shim `.ps1` junta os caminhos num argumento só).
-  Mandar em **lotes de ~30 com nomes relativos** (`cwd` na pasta): 100 caminhos absolutos estouram o limite
-  de 8191 caracteres do `cmd.exe` e o uploader sai com exit 1 sem mensagem.
-- Chave do `.env` = `claude-cli-admin` (role **Admin**, criada 2026-10-28; a antiga era ingestion/deployment,
-  que não cria versão/desativa/treina). Revogar em Dashboard → Keys ao fim do trabalho.
+Ciclo para gravar: **jumper + RST** → gravar → subir o viewer → **tirar o jumper + RST**. O boot só
+aparece no viewer se ele já estiver aberto antes do RST.
 
 ## Gotchas já pagos
 
 - **IO0 jumpeado depois de gravar** → placa parada em `waiting for download`. Sempre tirar + RST.
-- **`printf` × `Serial`:** com o buffer de TX de 8 KB, qualquer `printf` direto fura a fila e quebra as
-  linhas `#DET`. O `ei_printf` já está redirecionado ao `Serial`; não use `printf` no firmware.
-- **Arena na PSRAM é inevitável** no 96×96 (154 KB > maior bloco interno de 110 KB). Não reabrir essa
-  otimização; a única alavanca é entrada menor (64×64), que exige retreino.
-- `EI_MAX_OVERFLOW_BUFFER_COUNT=200` via `build_opt.h` (só foi necessário no float32, mantido).
+- **`printf` no firmware** fura a fila do `Serial` e quebra as linhas `#DET`; o `ei_printf` já está
+  redirecionado.
+- **Arena na PSRAM é inevitável** no 96×96. A única alavanca de velocidade seria entrada 64×64, com retreino.
+- O firmware manda `#FRAME N` **antes** da inferência e `#DET N` depois; o viewer só publica o quadro
+  junto com o `#DET` dele.
 - Validação do Studio (~33 imagens) é ruidosa; decidir pelo **Model testing**.
-- `Set-Content` no PowerShell interpreta strings começando com `-D…` como parâmetro — usar a ferramenta Write.
-- Pouca memória na máquina: o Claude Code pode encerrar processos em background ociosos (aconteceu com o `collector_ui`).
+- Uploader do Edge Impulse: lotes de ~30 arquivos com caminhos relativos (limite de 8191 caracteres do `cmd.exe`).
+- Publicar uma Version no Edge Impulse **exige login no Studio** (a API recusa com chave: JWT only).
+- `sed` com `\U`/`\r` na substituição corrompe texto (aconteceu no HANDOFF): para caminhos Windows,
+  editar com a ferramenta Edit ou com um script Python.
 
-## Regras do projeto (não negociáveis)
+## Regras do projeto
 
-- Repo próprio em `C:\Users\ricar\dev\fiap-iot-esp32cam`, branch `main`, remote **público** `origin`
-  (https://github.com/ricardopaivamelo/fiap-iot-esp32cam). Push automático após testes verdes.
-  A home `C:\Users\ricar` também é repo git: nunca `git add -A`/`git add .` lá; aqui, adicionar arquivos específicos.
+- Repo em `C:\Users\ricar\dev\fiap-iot-esp32cam`, branch `main`, remote **público** `origin`.
+  Push automático após testes verdes. A home `C:\Users\ricar` também é repo git: nunca
+  `git add -A`/`git add .` lá; aqui, adicionar arquivos específicos.
 - Commits em PT-BR, convencionais, terminando com `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
-- Criar repo no GitHub só depois do Ricardo confirmar a visibilidade (D5).
+- Nunca imprimir nem commitar a chave do `.env` nem o `backup/`.
 - Responder ao Ricardo em PT-BR, tom casual.
-
-## Decisões pendentes do Ricardo
-
-D2 entregável · D4 prazo · D5 visibilidade do repo · D6 vídeo · D7 dataset público no EI ·
-**D8** substituir ou somar o dataset v1 · **D9** método da recoleta (viewer × VisionGuard) ·
-mensagem ao professor (mão ou mesa? mesmos objetos? modelo da placa dele?). Detalhes no plano.
