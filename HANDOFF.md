@@ -4,7 +4,7 @@ Leia isto primeiro. Depois: `docs/superpowers/plans/2026-10-27-esp32cam-edge-imp
 e `docs/processo.md` (o que foi feito e por quê). **Reconfira os fatos abaixo com comando** antes de
 afirmar qualquer coisa — este arquivo é um retrato de 2026-10-28.
 
-## Onde estamos (2026-10-28)
+## Onde estamos (2026-10-29)
 
 - **Feito:** setup, coleta v1 (201 fotos, objeto na mão), boxes manuais, 3 iterações de treino,
   firmware offline + `viewer.py`. Modelo **v1 int8** (F1 teste 0,89) **gravado e rodando** na placa:
@@ -27,12 +27,14 @@ afirmar qualquer coisa — este arquivo é um retrato de 2026-10-28.
   - **Step 8 feito (2026-10-29):** retreino pela API com os mesmos hiperparâmetros do v1. Validação int8
     F1 0,94; **Model testing int8 F1 0,92** (P 0,90 / R 0,95; 54/58), float32 0,95. Detalhes e tabela v1×v2
     em `docs/processo.md`, Etapa 8.
-- **Próximo passo:** Step 9 — export int8 (EON) pela API → `arduino-cli lib install --zip-path` →
-  compilar → **Ricardo conecta a placa com jumper IO0↔GND + RST** → gravar → tirar jumper + RST → viewer
-  e comparação ao vivo com o v1. Depois: Version `v2` no EI; prints 09–11 (Ricardo, no Studio).
-- **Placa:** está com o firmware de inferência v1 gravado. O build atual em `build/` é a versão
-  final limpa (sem o log `[alloc]`); a placa ainda roda a anterior, que imprime `[alloc] 153937 B -> PSRAM`
-  por ciclo — inofensivo, some na próxima gravação.
+  - **Step 9 feito (2026-10-29):** lib v2 1.0.3 exportada pela API, compilada (483937 B) e **gravada**.
+    Na placa: NN 740 ms, ciclo 876 ms (igual ao v1). Teste ao vivo bem-sucedido segundo o Ricardo; sem
+    números por cena (o viewer não grava histórico). **Version 2 `v2`** criada no EI. Etapa 9 em `processo.md`.
+- **Task 6 concluída.** Pendente dela só os prints `09-dataset-v2`, `10-treino-v2`, `11-model-testing-v2`
+  (Ricardo, no Studio).
+- **Próximo passo:** Task 7 — validação com roteiro fixo e números (labels/confiança por cena),
+  `docs/resultados.md`, `serial-log.txt`, `12-viewer.png`, vídeo.
+- **Placa:** firmware de inferência **v2** gravado (sem o log `[alloc]`).
 
 ## Como retomar (comandos, PowerShell, na raiz do projeto)
 

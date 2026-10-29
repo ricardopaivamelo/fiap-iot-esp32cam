@@ -22,6 +22,7 @@ Registro detalhado do que já foi feito: `docs/processo.md`. Retomada de sessão
 - Otimização de latência encerrada: arena de 154 KB não cabe na RAM interna (maior bloco 110 KB); ~1,1 quadro/s aceito (Ricardo).
 - **Novo problema:** o dataset v1 tem a mão em todas as fotos de objeto → viés. **Decisão (Ricardo, 2026-10-28):** recoletar com os objetos apoiados na mesa e retreinar (Task 6). Isso substitui a decisão anterior de "não retreinar".
 - **2026-10-29:** Task 6 Steps 1–8 concluídos — dataset v2 (285 amostras), modelo v2 int8 com **F1 teste 0,92**. Falta o Step 9 (export, gravação, comparação ao vivo).
+- **2026-10-29:** Task 6 concluída — v2 gravado na placa (740 ms, igual ao v1), teste ao vivo OK, Version `v2` no EI. Próximo: prints 09–11 e Task 7.
 
 ## Global Constraints
 
@@ -90,7 +91,7 @@ Pendente desta task: screenshot do viewer → feito na Task 7 com o modelo final
 
 - [x] **Step 7:** upload `edge-impulse-uploader --category split` (via `%APPDATA%\npm\edge-impulse-uploader.cmd`) aplicando D8. Boxes manuais (Ricardo). Conferência pela API (`tools/check_labels.py`, rodado da raiz do projeto): 0 objetos sem box, 0 boxes `vazio`. *(285 ativas, 227/58; boxes caneca 123 / caderno 108 / garrafa 104; 0 sem box. Ruling (Ricardo): boxes assistidas — sugestões YOLOv5 revisadas + marcação via API com revisão visual; mão sempre fora da box. Folhas em `docs/img/rotulagem-v2/`.)*
 - [x] **Step 8:** retreinar com o mesmo impulse (RGB, 100 epochs, LR 0.001, augmentation). **Model testing int8.** Critério para substituir o v1: F1 teste ≥ 0,80 **e** melhora visível ao vivo sem a mão. Se não atingir, manter o v1 e registrar a comparação. *(Validação int8 0,94; **teste int8 0,92** (P 0,90 / R 0,95), float32 0,95. Falta a parte "melhora ao vivo" → Step 9.)*
-- [ ] **Step 9:** export int8 → instalar a lib → compilar → gravar → conferir no viewer. Prints `docs/img/09-dataset-v2.png`, `10-treino-v2.png`, `11-model-testing-v2.png` (Ricardo, no Studio). ~~Atualizar `docs/processo.md` (Etapa 8)~~ *(feito)*. Comparar ao vivo com o v1 e registrar. Criar Version `v2` no EI.
+- [x] **Step 9:** export int8 → instalar a lib → compilar → gravar → conferir no viewer. Prints `docs/img/09-dataset-v2.png`, `10-treino-v2.png`, `11-model-testing-v2.png` (Ricardo, no Studio). ~~Atualizar `docs/processo.md` (Etapa 8)~~ *(feito)*. Comparar ao vivo com o v1 e registrar. Criar Version `v2` no EI. *(2026-10-29: lib 1.0.3 exportada pela API, build 483937 B, gravado; na placa NN 740 ms / ciclo 876 ms, igual ao v1; teste ao vivo bem-sucedido segundo o Ricardo, sem números por cena (viewer não grava histórico) → números ficam para a Task 7; Version 2 `v2` criada. **Prints 09–11 ainda pendentes (Ricardo).**)*
 
 ### Task 7: Validação ao vivo + vídeo
 

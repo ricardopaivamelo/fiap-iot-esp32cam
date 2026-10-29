@@ -21,7 +21,7 @@ Ordem cronológica; as decisões que mudaram o rumo estão marcadas com **Decis�
 | Dataset v2 | 285 fotos 320×240 do quadro de inferência; 227 treino / 58 teste (mão fora das boxes) |
 | Modelo | RGB 96×96 (squash) → FOMO MobileNetV2 0.35, 100 epochs, LR 0.001, **int8** |
 | Qualidade (teste) | v1 **F1 0,89** (P 0,87 / R 0,91) → v2 **F1 0,92** (P 0,90 / R 0,95) |
-| Na placa | inferência **741 ms**, DSP 9 ms, captura 111 ms, ciclo **~0,88 s** (~1,1 quadro/s) |
+| Na placa | **v2** gravado: inferência **740 ms**, DSP 9 ms, captura 110 ms, ciclo **~0,88 s** (~1,1 quadro/s), igual ao v1 |
 | Implantação | firmware offline (sem WiFi); quadro + detecções pela serial → `viewer.py` no navegador |
 
 ---
@@ -278,9 +278,39 @@ viés foi removido é o **teste ao vivo** na placa (Etapa 9).
 
 ---
 
+## Etapa 9 — Implantação do v2 e teste ao vivo
+
+**Export e build (pela API).** Biblioteca Arduino **int8, EON** gerada pela API (job 55602965,
+`ei-fiap-iot-esp32cam-arduino-1.0.3-int8.zip`: int8, entrada 96×96, 3 labels), instalada no lugar da
+1.0.2 (v1) e compilada com o mesmo firmware (`PartitionScheme=huge_app`): **483.937 bytes**.
+Gravação na COM3 em 6,3 s, `Hash of data verified`.
+
+**Na placa (viewer, 2026-10-29).**
+
+| | v1 int8 | **v2 int8** |
+|---|---|---|
+| Inferência (NN) | 741 ms | **740 ms** |
+| DSP / captura | 9 / 111 ms | 9 / 110 ms |
+| Ciclo | ~0,88 s | **~0,876 s** (~1,1 quadro/s) |
+
+A latência é a mesma porque a arquitetura não mudou (FOMO MobileNetV2 0.35, 96×96): o custo da
+inferência depende da arquitetura e não dos pesos. **O ganho de qualidade do v2 não custou desempenho.**
+Mesa vazia: 0 boxes nos quadros conferidos.
+
+**Teste ao vivo.** Roteiro: cada objeto sozinho na mesa, os três juntos, mesa vazia e mão vazia na frente
+da câmera (o caso que expunha o viés do v1, Etapa 7). Resultado relatado pelo Ricardo: **testes bem-sucedidos**
+(≈370 ciclos). Limitação do registro: o viewer mostra só o quadro atual, então esta sessão não gravou
+detecções por cena (labels, confiança, contagem). A validação com números e roteiro fixo fica para a
+Task 7 (`docs/resultados.md`, `serial-log.txt`, vídeo).
+
+**Decisão:** o v2 substitui o v1 (critérios do plano: F1 teste ≥ 0,80 e melhora ao vivo). O estado foi
+congelado no EI como **Version 2 (`v2`)**, ao lado da Version 1 (`v1-mao`), sem publicar o projeto.
+
+---
+
 ## Próximas etapas (resumo; detalhes no plano)
 
-1. Export int8 do v2, gravação na placa e comparação ao vivo com o v1.
+1. Prints do Studio para o relatório: `09-dataset-v2`, `10-treino-v2`, `11-model-testing-v2`.
 2. Validação ao vivo com roteiro fixo e registro em `docs/resultados.md`.
 3. Vídeo da placa funcionando (take único).
 4. Pacote de entrega: `.bin` único gravável na placa do professor, guia de gravação, README-relatório.
