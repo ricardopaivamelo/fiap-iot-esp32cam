@@ -30,8 +30,7 @@ afirmar qualquer coisa — este arquivo é um retrato de 2026-10-28.
   - **Step 9 feito (2026-10-29):** lib v2 1.0.3 exportada pela API, compilada (483937 B) e **gravada**.
     Na placa: NN 740 ms, ciclo 876 ms (igual ao v1). Teste ao vivo bem-sucedido segundo o Ricardo; sem
     números por cena (o viewer não grava histórico). **Version 2 `v2`** criada no EI. Etapa 9 em `processo.md`.
-- **Task 6 concluída.** Pendente dela só os prints `09-dataset-v2`, `10-treino-v2`, `11-model-testing-v2`
-  (Ricardo, no Studio).
+- **Task 6 concluída**, prints `09`, `10`, `10b`, `11` salvos (Studio, 2026-10-29).
 - **Próximo passo:** Task 7 — validação com roteiro fixo e números (labels/confiança por cena),
   `docs/resultados.md`, `serial-log.txt`, `12-viewer.png`, vídeo.
 - **Teste A/B feito (2026-10-29):** v1 recompilado com o firmware atual (`build-v1/`), gravado, 6 prints

@@ -349,6 +349,21 @@ enquanto o v2 foi treinado com o mesmo quadro QVGA que vê na placa. Neste A/B o
 o falso positivo "mão vazia → objeto" da Etapa 7. O v2, na mão vazia, deu background, com um quadro
 isolado de caneca 0,55.
 
+**Prints do Studio (v2).** `docs/img/09-dataset-v2.png`: 490 itens no total, 81%/19%. A contagem inclui
+as 205 amostras desativadas (201 do v1 e 4 do v2); ativas são 285. `10-treino-v2.png`: int8, F1 de
+validação 94,2%. `10b-treino-v2-float32.png`: float32, 95,9%. `11-model-testing-v2.png`: int8, F1 0,92,
+accuracy 93,10% (54/58).
+
+| On-device (estimativa do Studio, EON) | float32 | **int8** | ganho do int8 |
+|---|---|---|---|
+| Inferência | 2726 ms | 996 ms | 2,7× |
+| RAM de pico | 415,1 KB | 133,0 KB | 3,1× |
+| Flash | 112,7 KB | 81,4 KB | 1,4× |
+| **Medido na placa** | — | **740 ms** | 26% abaixo da estimativa |
+
+A quantização int8 custa 1,7 ponto de F1 na validação (95,9 → 94,2) e é o que viabiliza o modelo na
+placa: a RAM de pico do float32 (415 KB) passa da RAM interna inteira do ESP32 (~320 KB).
+
 **Decisão:** o v2 substitui o v1 (critérios do plano: F1 teste ≥ 0,80 e melhora ao vivo). O estado foi
 congelado no EI como **Version 2 (`v2`)**, ao lado da Version 1 (`v1-mao`), sem publicar o projeto.
 
